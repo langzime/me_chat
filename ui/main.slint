@@ -1,0 +1,35 @@
+import { DraggableRectangle } from "component/draggable-rectangle.slint";
+export component Main inherits Window {
+    no-frame: true;
+    background: transparent;
+    // 设置窗口标题
+    title: "Me Chat";
+    // 设置窗口大小
+    width: 800px;
+    height: 640px;
+
+    HorizontalLayout {
+        DraggableRectangle {
+            background: rgb(46,46,46);
+            width: 55px;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-color: rgb(46,46,46);
+            border-width: 0px;
+          }
+        Rectangle {
+          background: rgb(220,220,219);
+          min-width: 200px;
+          border-width: 0px;
+        }
+        Rectangle {
+          background: rgb(245,245,245);
+          min-width: 444px;
+          border-top-right-radius: 5px;
+          border-bottom-right-radius: 5px;
+          border-color: rgb(245,245,245);
+          border-width: 0px;
+        }
+      }
+    
+}

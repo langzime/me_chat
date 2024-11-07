@@ -1,0 +1,40 @@
+export component DraggableRectangle inherits Rectangle {
+    // 拖拽的偏移量
+    property <length> x_offset: 0px;
+    property <length> y_offset: 0px;
+    // 是否处于拖拽状态
+    property <bool> dragging: false;
+
+    // 回调函数，可用于拖拽开始和结束时的额外处理
+    callback on_drag_start();
+    callback on_drag_end();
+
+    // 触摸区域，确保拖拽的事件范围覆盖整个组件
+    touch_area := TouchArea {
+        width: parent.width;
+        height: parent.height;
+
+        // 监听指针事件
+        pointer-event(ev) => {
+            if (ev.kind == PointerEventKind.down) {
+                // 使用 TouchArea 的 x 和 y 获取事件位置
+                x_offset = self.mouse-x - self.x;
+                y_offset = self.mouse-y - self.y;
+                dragging = true;
+                on_drag_start();
+            } 
+            else if (ev.kind == PointerEventKind.up) {
+                dragging = false;
+                on_drag_end();
+            } 
+            else if (dragging && ev.kind == PointerEventKind.move) {
+                // 仅在拖拽状态更新位置
+                self.x = self.mouse-x - x_offset;
+                self.y = self.mouse-y - y_offset;
+            }
+        }
+    }
+
+    // 设置默认背景颜色
+    background: blue;
+}
