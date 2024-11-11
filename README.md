@@ -16,8 +16,7 @@ MeChat 是一个简洁的聊天 UI 项目，重点模拟了微信的基础界面
 
 ## 环境要求
 
-- **Rust**: 版本 `1.60` 或更高
-- **Slint**: 版本 `1.0` 或更高
+- **Slint**: 版本 `1.80` 或更高
 - **Cargo**: Rust 的包管理工具
 
 ## 安装指南
@@ -25,7 +24,7 @@ MeChat 是一个简洁的聊天 UI 项目，重点模拟了微信的基础界面
 1. 克隆本仓库：
 
    ```bash
-   git clone https://github.com/yourusername/me_chat.git
+   git clone https://github.com/sanyexieai/me_chat.git
    cd me_chat
    ```
 
@@ -43,21 +42,6 @@ MeChat 是一个简洁的聊天 UI 项目，重点模拟了微信的基础界面
    cargo run
    ```
 
-## 项目结构
-
-```
-me_chat/
-├── src/
-│   ├── main.rs           # 主入口文件
-│   ├── ui/               # 存放 UI 相关文件
-│   │   ├── main_window.slint  # 主界面设计文件
-│   │   └── components/   # 组件文件夹
-│   │       ├── chat_list.slint   # 聊天列表组件
-│   │       ├── contact_list.slint  # 联系人列表组件
-│   │       └── profile.slint      # 个人中心组件
-├── Cargo.toml            # Rust 项目配置文件
-└── README.md             # 项目文档
-```
 
 ## 使用 Slint 实现的微信风格 UI
 
