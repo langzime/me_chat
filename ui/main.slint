@@ -166,12 +166,50 @@ export component Main inherits BorderlessWindow {
           border-width: 0px;
           VerticalLayout{
             Rectangle {
-              horizontal-stretch: 0;
               height: 28px;
               background: transparent;
               TouchArea {
                 pointer-event(ev) => {
                     root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                }
+              }
+            }
+            Rectangle {
+              background: transparent;
+              height: 40px;
+              HorizontalLayout {
+                alignment: space-around;
+                //搜索框
+                Rectangle {
+                  width: 130px;
+                  height: 30px;
+                  horizontal-stretch: 1;
+                  background: rgb(226,226,226);
+                  border-radius: 5px;
+                  padding: 5px;
+                  VerticalLayout {
+                    alignment: start;
+                    padding: 5px;
+                    Image {
+                      horizontal-stretch: 0;
+                      source: @image-url("assets/icon/search.svg");
+                      width: 20px;
+                      height: 20px;
+                    }
+                  }
+                }
+                //加号框
+                Rectangle {
+                  width: 30px;
+                  height: 30px;
+                  background: rgb(226,226,226);
+                  border-radius: 5px;
+                  padding: 5px;
+                  Image {
+                    source: @image-url("assets/icon/more.svg");
+                    width: 20px;
+                    height: 20px;
+                  }
                 }
               }
             }
