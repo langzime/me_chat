@@ -32,9 +32,11 @@ export component Main inherits BorderlessWindow {
     }
 
     HorizontalLayout {
+        //工具栏
         Rectangle {
             background: rgb(46,46,46);
             width: 55px;
+            height: 100%;
             border-top-left-radius: 3px;
             border-bottom-left-radius: 3px;
             border-color: rgb(46,46,46);
@@ -44,10 +46,123 @@ export component Main inherits BorderlessWindow {
                     root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
                 }
             }
-          }
+            VerticalLayout{
+              height: 100%;
+              //头像
+              Rectangle{
+                vertical-stretch: 0;
+                height: 100px;
+                padding-top: 30px;
+                Image {
+                  source: @image-url("assets/avatar.jpg");
+                  width: 40px;
+                  height: 40px;
+                }
+              }
+              //上工具栏
+              Rectangle{
+                vertical-stretch: 1;
+                min-height: 260px;
+                background: transparent;
+                Rectangle {
+                  height: 100%;
+                  vertical-stretch: 1;
+                  VerticalLayout{
+                    alignment: start;
+                    Rectangle{
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/icon/home.svg");
+                        width: 25px;
+                        height: 25px;
+                      }
+                    }
+                    Rectangle{
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/icon/contact.svg");
+                        width: 25px;
+                        height: 25px;
+                      }
+                    }
+                    Rectangle{
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/icon/find.svg");
+                        width: 25px;
+                        height: 25px;
+                      }
+                    }
+                    Rectangle{
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/icon/find.svg");
+                        width: 25px;
+                        height: 25px;
+                      }
+                    }
+                    Rectangle{
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/icon/find.svg");
+                        width: 25px;
+                        height: 25px;
+                      }
+                    }
+                    Rectangle{
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/icon/find.svg");
+                        width: 25px;
+                        height: 25px;
+                      }
+                    }
+                  }
+                }
+              }
+              //下工具栏
+              Rectangle{
+                vertical-stretch: 0;
+                height: 130px;
+                background: transparent;
+                VerticalLayout{
+                alignment: end;
+                Rectangle{
+                  height: 40px;
+                  Image {
+                    source: @image-url("assets/icon/find.svg");
+                    width: 25px;
+                    height: 25px;
+                  }
+                }
+                Rectangle{
+                  height: 40px;
+                  Image {
+                    source: @image-url("assets/icon/find.svg");
+                    width: 25px;
+                    height: 25px;
+                  }
+                }
+                Rectangle{
+                  height: 40px;
+                  Image {
+                    source: @image-url("assets/icon/find.svg");
+                    width: 25px;
+                    height: 25px;
+                  }
+                }
+                Rectangle{
+                  height: 20px;
+                }
+              }
+            }
+            }
+        }
+        //消息列表
         Rectangle {
           background: rgb(247,247,247);
           width: 200px;
+          height: 100%;
           border-width: 0px;
           VerticalLayout{
             Rectangle {
@@ -67,11 +182,13 @@ export component Main inherits BorderlessWindow {
             }
           }
         }
+        //聊天框
         Rectangle {
           background: rgb(245,245,245);
           border-top-right-radius: 3px;
           border-bottom-right-radius: 3px;
           min-width: 444px;
+          height: 100%;
           border-color: rgb(214,214,214);
           border-width: 0px;
           VerticalLayout{
