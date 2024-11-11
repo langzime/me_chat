@@ -1,34 +1,157 @@
-import { DraggableRectangle } from "component/draggable-rectangle.slint";
-export component Main inherits Window {
-    no-frame: true;
-    background: transparent;
+import { BorderlessWindow } from "component/borderless-window.slint";
+
+
+
+export component Main inherits BorderlessWindow {
     // 设置窗口标题
     title: "Me Chat";
     // 设置窗口大小
-    width: 800px;
-    height: 640px;
+    min-width: 700px;
+    min-height: 500px;
+    callback close-window();
+    callback minimized-window(bool);
+    callback maximized-window(bool);
+    callback move-window(length, length);
+    callback mouse-down(int, int);
+    callback mouse-move(int, int);
+
+    on-close-window() => {
+        close-window();
+    }
+
+    on-minimized-window(enable) => {
+        minimized-window(enable);
+    }
+
+    on-maximized-window(enable) => {
+        maximized-window(enable);
+    }
+
+    on-move-window(offset-x, offset-y) => {
+        move-window(offset-x, offset-y);
+    }
 
     HorizontalLayout {
-        DraggableRectangle {
+        Rectangle {
             background: rgb(46,46,46);
             width: 55px;
-            border-top-left-radius: 5px;
-            border-bottom-left-radius: 5px;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
             border-color: rgb(46,46,46);
             border-width: 0px;
+            TouchArea {
+                pointer-event(ev) => {
+                    root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                }
+            }
           }
         Rectangle {
-          background: rgb(220,220,219);
-          min-width: 200px;
+          background: rgb(247,247,247);
+          width: 200px;
           border-width: 0px;
+          VerticalLayout{
+            Rectangle {
+              horizontal-stretch: 0;
+              height: 28px;
+              background: transparent;
+              TouchArea {
+                pointer-event(ev) => {
+                    root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                }
+              }
+            }
+            Rectangle {
+              horizontal-stretch: 1;
+              background: rgb(230,230,230);
+
+            }
+          }
         }
         Rectangle {
           background: rgb(245,245,245);
+          border-top-right-radius: 3px;
+          border-bottom-right-radius: 3px;
           min-width: 444px;
-          border-top-right-radius: 5px;
-          border-bottom-right-radius: 5px;
-          border-color: rgb(245,245,245);
+          border-color: rgb(214,214,214);
           border-width: 0px;
+          VerticalLayout{
+            Rectangle {
+              horizontal-stretch: 0;
+              height: 28px;
+              background: transparent;
+              TouchArea {
+                pointer-event(ev) => {
+                    root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                }
+              }
+              HorizontalLayout {
+                alignment:end;
+                //最小化按钮
+                Rectangle {
+                    Rectangle {
+                        border-radius: 3px;
+                        width: 24px;
+                        height: 24px;
+                        background: transparent;
+                        touch-minize := TouchArea {
+                            clicked => { root.on-minimized-window(true) }
+                        }
+                        Text {
+                            color: rgba(79,79,79,0.8);
+                            text: "-";
+                            font-size: 24px;
+                        }
+                    }
+                    width: 30px;
+                }
+                //最大化按钮
+                Rectangle {
+                    Rectangle {
+                        border-radius: 3px;
+                        width: 24px;
+                        height: 24px;
+                        background: transparent;
+                        touch-maximized := TouchArea {
+                            clicked => {
+                                root.is-maximized = !root.is-maximized;
+                                root.on-maximized-window(root.is-maximized);
+                            }
+                        }
+                        Text {
+                            color: rgba(79,79,79,0.8);
+                            text: root.is-maximized?"❐":"□";
+                            font-size: 24px;
+                        }
+                    }
+                    width: 30px;
+                }
+                //关闭按钮
+                Rectangle {
+                  Rectangle {
+                      border-radius: 3px;
+                      y: 5px;
+                      width: 24px;
+                      height: 24px;
+                      background: transparent;
+                      touch-close := TouchArea {
+                        clicked => { root.on-close-window() }
+                    }
+                    Text {
+                        color: rgba(79,79,79,0.8);
+                        text: "×";
+                        font-size: 24px;
+                    }
+                  }
+                  width: 30px;
+              }
+              }
+            }
+            Rectangle {
+              horizontal-stretch: 1;
+              background: rgb(245,245,245);
+
+            }
+          }
         }
       }
     
