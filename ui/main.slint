@@ -217,7 +217,44 @@ export component Main inherits BorderlessWindow {
             Rectangle {
               horizontal-stretch: 1;
               background: rgb(230,230,230);
-
+              VerticalLayout {
+                alignment: start;
+                Rectangle {
+                  height: 65px;
+                  HorizontalLayout {
+                    Rectangle {
+                      width: 40px;
+                      height: 40px;
+                      Image {
+                        source: @image-url("assets/avatar.jpg");
+                        width: 40px;
+                        height: 40px;
+                      }
+                    }
+                    Rectangle {
+                      min-width: 100px;
+                      VerticalLayout {
+                        Rectangle {
+                          Text {
+                            text: "文件传输助手";
+                          }
+                          }
+                          Rectangle {
+                            Text {
+                              text: "aabb";
+                            }
+                            }
+                      }
+                    }
+                    Rectangle {
+                      max-width: 60px;
+                      Text {
+                        text: "昨天";
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
