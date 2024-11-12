@@ -42,6 +42,8 @@ MeChat 是一个简洁的聊天 UI 项目，重点模拟了微信的基础界面
    cargo run
    ```
 
+5. 运行界面：
+   ![聊天界面](doc/page.png)
 
 ## 使用 Slint 实现的微信风格 UI
 
