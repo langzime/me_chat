@@ -14,24 +14,21 @@ export component Main inherits BorderlessWindow {
     callback move-window(length, length);
     callback mouse-down(int, int);
     callback mouse-move(int, int);
-
     on-close-window() => {
         close-window();
     }
-
     on-minimized-window(enable) => {
         minimized-window(enable);
     }
-
     on-maximized-window(enable) => {
         maximized-window(enable);
     }
-
     on-move-window(offset-x, offset-y) => {
         move-window(offset-x, offset-y);
     }
-
     HorizontalLayout {
+        width: 100%;
+        alignment: stretch;
         //工具栏
         Rectangle {
             background: rgb(46,46,46);
@@ -46,304 +43,486 @@ export component Main inherits BorderlessWindow {
                     root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
                 }
             }
-            VerticalLayout{
-              height: 100%;
+
+            VerticalLayout {
+                height: 100%;
               //头像
-              Rectangle{
-                vertical-stretch: 0;
-                height: 100px;
-                padding-top: 30px;
-                Image {
-                  source: @image-url("assets/avatar.jpg");
-                  width: 40px;
-                  height: 40px;
+              Rectangle {
+                    vertical-stretch: 0;
+                    height: 100px;
+                    padding-top: 30px;
+                    Image {
+                        source: @image-url("assets/avatar.jpg");
+                        width: 40px;
+                        height: 40px;
+                    }
                 }
-              }
               //上工具栏
-              Rectangle{
-                vertical-stretch: 1;
-                min-height: 260px;
-                background: transparent;
-                Rectangle {
-                  height: 100%;
-                  vertical-stretch: 1;
-                  VerticalLayout{
-                    alignment: start;
-                    Rectangle{
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/icon/home.svg");
-                        width: 25px;
-                        height: 25px;
-                      }
+              Rectangle {
+                    vertical-stretch: 1;
+                    min-height: 260px;
+                    background: transparent;
+                    Rectangle {
+                        height: 100%;
+                        vertical-stretch: 1;
+                        VerticalLayout {
+                            alignment: start;
+                            Rectangle {
+                                height: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/home.svg");
+                                    width: 25px;
+                                    height: 25px;
+                                }
+                            }
+
+                            Rectangle {
+                                height: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/contact.svg");
+                                    width: 25px;
+                                    height: 25px;
+                                }
+                            }
+
+                            Rectangle {
+                                height: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/collect.svg");
+                                    width: 25px;
+                                    height: 25px;
+                                }
+                            }
+
+                            Rectangle {
+                                height: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/folder.svg");
+                                    width: 25px;
+                                    height: 25px;
+                                }
+                            }
+
+                            Rectangle {
+                                height: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/circle.svg");
+                                    width: 25px;
+                                    height: 25px;
+                                }
+                            }
+
+                            Rectangle {
+                                height: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/video.svg");
+                                    width: 25px;
+                                    height: 25px;
+                                }
+                            }
+                        }
                     }
-                    Rectangle{
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/icon/contact.svg");
-                        width: 25px;
-                        height: 25px;
-                      }
-                    }
-                    Rectangle{
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/icon/collect.svg");
-                        width: 25px;
-                        height: 25px;
-                      }
-                    }
-                    Rectangle{
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/icon/folder.svg");
-                        width: 25px;
-                        height: 25px;
-                      }
-                    }
-                    Rectangle{
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/icon/circle.svg");
-                        width: 25px;
-                        height: 25px;
-                      }
-                    }
-                    Rectangle{
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/icon/video.svg");
-                        width: 25px;
-                        height: 25px;
-                      }
-                    }
-                  }
                 }
-              }
               //下工具栏
-              Rectangle{
-                vertical-stretch: 0;
-                height: 130px;
-                background: transparent;
-                VerticalLayout{
-                alignment: end;
-                Rectangle{
-                  height: 40px;
-                  Image {
-                    source: @image-url("assets/icon/mini.svg");
-                    width: 25px;
-                    height: 25px;
-                  }
+              Rectangle {
+                    vertical-stretch: 0;
+                    height: 130px;
+                    background: transparent;
+                    VerticalLayout {
+                        alignment: end;
+                        Rectangle {
+                            height: 40px;
+                            Image {
+                                source: @image-url("assets/icon/mini.svg");
+                                width: 25px;
+                                height: 25px;
+                            }
+                        }
+
+                        Rectangle {
+                            height: 40px;
+                            Image {
+                                source: @image-url("assets/icon/phone.svg");
+                                width: 28px;
+                                height: 28px;
+                            }
+                        }
+
+                        Rectangle {
+                            height: 40px;
+                            Image {
+                                source: @image-url("assets/icon/setting.svg");
+                                width: 25px;
+                                height: 25px;
+                            }
+                        }
+
+                        Rectangle {
+                            height: 20px;
+                        }
+                    }
                 }
-                Rectangle{
-                  height: 40px;
-                  Image {
-                    source: @image-url("assets/icon/phone.svg");
-                    width: 28px;
-                    height: 28px;
-                  }
-                }
-                Rectangle{
-                  height: 40px;
-                  Image {
-                    source: @image-url("assets/icon/setting.svg");
-                    width: 25px;
-                    height: 25px;
-                  }
-                }
-                Rectangle{
-                  height: 20px;
-                }
-              }
-            }
             }
         }
         //消息列表
         Rectangle {
-          background: rgb(247,247,247);
-          width: 200px;
-          height: 100%;
-          border-width: 1px;
-          border-color: rgb(214,214,214);
-          VerticalLayout{
-            Rectangle {
-              height: 28px;
-              background: transparent;
-              TouchArea {
-                pointer-event(ev) => {
-                    root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+            background: rgb(247,247,247);
+            width: 200px;
+            height: 100%;
+            border-width: 1px;
+            border-color: rgb(214,214,214);
+            VerticalLayout {
+                Rectangle {
+                    height: 28px;
+                    background: transparent;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                        }
+                    }
                 }
-              }
-            }
-            Rectangle {
-              background: transparent;
-              height: 40px;
-              HorizontalLayout {
-                alignment: space-around;
+
+                Rectangle {
+                    background: transparent;
+                    height: 40px;
+                    HorizontalLayout {
+                        alignment: space-around;
                 //搜索框
                 Rectangle {
-                  width: 130px;
-                  height: 30px;
-                  horizontal-stretch: 1;
-                  background: rgb(226,226,226);
-                  border-radius: 5px;
-                  padding: 5px;
-                  VerticalLayout {
-                    alignment: start;
-                    padding: 5px;
-                    Image {
-                      horizontal-stretch: 0;
-                      source: @image-url("assets/icon/search.svg");
-                      width: 20px;
-                      height: 20px;
-                    }
-                  }
-                }
+                            width: 130px;
+                            height: 30px;
+                            horizontal-stretch: 1;
+                            background: rgb(226,226,226);
+                            border-radius: 5px;
+                            padding: 5px;
+                            VerticalLayout {
+                                alignment: start;
+                                padding: 5px;
+                                Image {
+                                    horizontal-stretch: 0;
+                                    source: @image-url("assets/icon/search.svg");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                            }
+                        }
                 //加号框
                 Rectangle {
-                  width: 30px;
-                  height: 30px;
-                  background: rgb(226,226,226);
-                  border-radius: 5px;
-                  padding: 5px;
-                  Image {
-                    source: @image-url("assets/icon/more.svg");
-                    width: 20px;
-                    height: 20px;
-                  }
+                            width: 30px;
+                            height: 30px;
+                            background: rgb(226,226,226);
+                            border-radius: 5px;
+                            padding: 5px;
+                            Image {
+                                source: @image-url("assets/icon/more.svg");
+                                width: 20px;
+                                height: 20px;
+                            }
+                        }
+                    }
                 }
-              }
-            }
-            Rectangle {
-              horizontal-stretch: 1;
-              background: rgb(230,230,230);
-              VerticalLayout {
-                alignment: start;
+
                 Rectangle {
-                  height: 65px;
-                  HorizontalLayout {
-                    Rectangle {
-                      width: 40px;
-                      height: 40px;
-                      Image {
-                        source: @image-url("assets/avatar.jpg");
-                        width: 40px;
-                        height: 40px;
-                      }
-                    }
-                    Rectangle {
-                      min-width: 100px;
-                      VerticalLayout {
+                    horizontal-stretch: 1;
+                    VerticalLayout {
                         Rectangle {
-                          Text {
-                            text: "文件传输助手";
-                          }
-                          }
-                          Rectangle {
-                            Text {
-                              text: "aabb";
+                            height: 65px;
+                            background: rgb(222,221,220);
+                            HorizontalLayout {
+                                Rectangle {
+                                    width: 60px;
+                                    height: 65px;
+                                    padding-left: 10px;
+                                    Image {
+                                        source: @image-url("assets/tensor.jpg");
+                                        width: 40px;
+                                        height: 40px;
+                                    }
+                                }
+
+                                Rectangle {
+                                    min-width: 70px;
+                                    horizontal-stretch: 1;
+                                    VerticalLayout {
+                                        Rectangle {
+                                            Text {
+                                                x: 0px;
+                                                text: "文件传输助手";
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            Text {
+                                                x: 0px;
+                                                text: "aabb";
+                                                color: rgb(167,167,167);
+                                                font-size: 12px;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    max-width: 60px;
+                                    VerticalLayout {
+                                        Rectangle {
+                                            height: 35px;
+                                            Text {
+                                                text: "昨天";
+                                                color: rgb(167,167,167);
+                                                font-size: 12px;
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            height: 30px;
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    width: 10px;
+                                }
                             }
-                            }
-                      }
+                        }
                     }
-                    Rectangle {
-                      max-width: 60px;
-                      Text {
-                        text: "昨天";
-                      }
-                    }
-                  }
                 }
-              }
             }
-          }
         }
         //聊天框
         Rectangle {
-          background: rgb(245,245,245);
-          border-top-right-radius: 3px;
-          border-bottom-right-radius: 3px;
-          min-width: 444px;
-          height: 100%;
-          VerticalLayout{
-            Rectangle {
-              horizontal-stretch: 0;
-              height: 28px;
-              background: transparent;
-              TouchArea {
-                pointer-event(ev) => {
-                    root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
-                }
-              }
-              HorizontalLayout {
-                alignment:end;
-                //最小化按钮
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            min-width: 444px;
+            height: 100%;
+            horizontal-stretch: 1;
+            background: rgb(245,245,245);
+            VerticalLayout {
+                //标题栏拖拽区域
                 Rectangle {
-                    Rectangle {
-                        border-radius: 3px;
-                        width: 24px;
-                        height: 24px;
-                        background: transparent;
-                        touch-minize := TouchArea {
-                            clicked => { root.on-minimized-window(true) }
-                        }
-                        Text {
-                            color: rgba(79,79,79,0.8);
-                            text: "-";
-                            font-size: 24px;
+                    horizontal-stretch: 0;
+                    height: 28px;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
                         }
                     }
-                    width: 30px;
+                    //标题栏工具区域
+                    HorizontalLayout {
+                        alignment: end;
+                        //最小化按钮
+                        Rectangle {
+                            Rectangle {
+                                border-radius: 3px;
+                                width: 24px;
+                                height: 24px;
+                                background: transparent;
+                                touch-minize := TouchArea {
+                                    clicked => {
+                                        root.on-minimized-window(true)
+                                    }
+                                }
+                                Text {
+                                    color: rgba(79,79,79,0.8);
+                                    text: "-";
+                                    font-size: 24px;
+                                }
+                            }
+                            width: 30px;
+                        }
+                        //最大化按钮
+                        Rectangle {
+                            Rectangle {
+                                border-radius: 3px;
+                                width: 24px;
+                                height: 24px;
+                                background: transparent;
+                                touch-maximized := TouchArea {
+                                    clicked => {
+                                        root.is-maximized = !root.is-maximized;
+                                        root.on-maximized-window(root.is-maximized);
+                                    }
+                                }
+
+                                Text {
+                                    color: rgba(79,79,79,0.8);
+                                    text: root.is-maximized ? "❐" : "□";
+                                    font-size: 24px;
+                                }
+                            }
+                            width: 30px;
+                        }
+                        //关闭按钮
+                        Rectangle {
+                            Rectangle {
+                                border-radius: 3px;
+                                y: 5px;
+                                width: 24px;
+                                height: 24px;
+                                background: transparent;
+                                touch-close := TouchArea {
+                                    clicked => {
+                                        root.on-close-window()
+                                    }
+                                }
+                                Text {
+                                    color: rgba(79,79,79,0.8);
+                                    text: "×";
+                                    font-size: 24px;
+                                }
+                            }
+                            width: 30px;
+                        }
+                    }
                 }
-                //最大化按钮
+                //标题栏
                 Rectangle {
-                    Rectangle {
-                        border-radius: 3px;
-                        width: 24px;
-                        height: 24px;
-                        background: transparent;
-                        touch-maximized := TouchArea {
-                            clicked => {
-                                root.is-maximized = !root.is-maximized;
-                                root.on-maximized-window(root.is-maximized);
+                    horizontal-stretch: 0;
+                    height: 40px;
+                    //标题栏工具区域
+                    HorizontalLayout {
+                        alignment: start;
+                        //聊天名
+                        Rectangle {
+                            min-width: 400px;
+                            horizontal-stretch: 1;
+                            Text {
+                                x: 20px;
+                                y: 0px;
+                                text: "文件传输助手";
+                                font-size: 20px;
                             }
                         }
-                        Text {
-                            color: rgba(79,79,79,0.8);
-                            text: root.is-maximized?"❐":"□";
-                            font-size: 24px;
+                        //三个点
+                        Rectangle {
+                            width: 30px;
                         }
                     }
-                    width: 30px;
                 }
-                //关闭按钮
+                //分割线
                 Rectangle {
-                  Rectangle {
-                      border-radius: 3px;
-                      y: 5px;
-                      width: 24px;
-                      height: 24px;
-                      background: transparent;
-                      touch-close := TouchArea {
-                        clicked => { root.on-close-window() }
-                    }
-                    Text {
-                        color: rgba(79,79,79,0.8);
-                        text: "×";
-                        font-size: 24px;
-                    }
-                  }
-                  width: 30px;
-              }
-              }
-            }
-            Rectangle {
-              horizontal-stretch: 1;
-              background: rgb(245,245,245);
+                    background: rgb(214,214,214);
+                    height: 1px;
+                }
+                //聊天内容
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+                //分割线
+                Rectangle {
+                    background: rgba(214,214,214,0.5);
+                    height: 1px;
+                }
+                //输入区域
+                Rectangle {
+                    height: 130px;
+                    background: rgb(245,245,245);
+                    VerticalLayout {
+                        Rectangle {
+                            height: 40px;
+                            HorizontalLayout {
+                    //表情工具栏区域
+                    Rectangle {
+                        min-width: 300px;
+                        horizontal-stretch: 1;
+                        HorizontalLayout {
+                            alignment: start;
+                            Rectangle {
+                                horizontal-stretch: 0;
+                                width: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/biaoqing.svg");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                            }
 
+                            Rectangle {
+                                horizontal-stretch: 0;
+                                width: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/wenjian.svg");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                            }
+
+                            Rectangle {
+                                horizontal-stretch: 0;
+                                width: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/jiandao.svg");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                            }
+
+                            Rectangle {
+                                horizontal-stretch: 0;
+                                width: 40px;
+                                Image {
+                                    source: @image-url("assets/icon/jilu.svg");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                            }
+                        }
+                      }
+                    //音视频工具栏区域
+                    Rectangle {
+                      width: 100px;
+                      HorizontalLayout {
+                          Rectangle {
+                              horizontal-stretch: 0;
+                              width: 40px;
+                              Image {
+                                  source: @image-url("assets/icon/yuyin.svg");
+                                  width: 20px;
+                                  height: 20px;
+                              }
+                          }
+
+                          Rectangle {
+                              horizontal-stretch: 0;
+                              width: 40px;
+                              Image {
+                                  source: @image-url("assets/icon/shipin.svg");
+                                  width: 20px;
+                                  height: 20px;
+                              }
+                          }
+                      }
+                  }
+                            }
+                        }
+                    //输入框
+                    Rectangle {
+                                height: 45px;
+                            }
+                    //发送按钮
+                    Rectangle {
+                        height: 35px;
+                        HorizontalLayout {
+                            alignment: end;
+                            padding-right: 28px;
+                            Rectangle {
+                                width: 100px;
+                                height: 35px;
+                                background: rgb(233,233,233);
+                                border-radius: 5px;
+                                Text {
+                                    text: "发送(S)";
+                                    color: rgb(7,193,96);
+                                }
+                            }
+                        }
+                      } 
+                      Rectangle{
+                        height: 10px;
+                      }
+                    }
+                }
             }
-          }
         }
-      }
-    
+    }
 }
