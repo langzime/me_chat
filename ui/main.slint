@@ -46,7 +46,7 @@ export component Main inherits BorderlessWindow {
               //头像
               Rectangle {
                     vertical-stretch: 0;
-                    height: 100px;
+                    height: 80px;
                     padding-top: 30px;
                     Image {
                         source: @image-url("assets/avatar.jpg");
@@ -86,7 +86,7 @@ export component Main inherits BorderlessWindow {
                                 height: 40px;
                                 Image {
                                     source: @image-url("assets/icon/collect.svg");
-                                    width: 25px;
+                                    width: 23px;
                                     height: 25px;
                                 }
                             }
@@ -95,7 +95,7 @@ export component Main inherits BorderlessWindow {
                                 height: 40px;
                                 Image {
                                     source: @image-url("assets/icon/folder.svg");
-                                    width: 25px;
+                                    width: 23px;
                                     height: 25px;
                                 }
                             }
@@ -104,8 +104,8 @@ export component Main inherits BorderlessWindow {
                                 height: 40px;
                                 Image {
                                     source: @image-url("assets/icon/circle.svg");
-                                    width: 25px;
-                                    height: 25px;
+                                    width: 21px;
+                                    height: 23px;
                                 }
                             }
 
@@ -131,8 +131,8 @@ export component Main inherits BorderlessWindow {
                             height: 40px;
                             Image {
                                 source: @image-url("assets/icon/mini.svg");
-                                width: 25px;
-                                height: 25px;
+                                width: 23px;
+                                height: 23px;
                             }
                         }
 
@@ -140,8 +140,8 @@ export component Main inherits BorderlessWindow {
                             height: 40px;
                             Image {
                                 source: @image-url("assets/icon/phone.svg");
-                                width: 28px;
-                                height: 28px;
+                                width: 25px;
+                                height: 25px;
                             }
                         }
 
@@ -181,25 +181,24 @@ export component Main inherits BorderlessWindow {
 
                 Rectangle {
                     background: transparent;
-                    height: 40px;
+                    height: 35px;
                     HorizontalLayout {
                         alignment: space-around;
                         //搜索框
                         Rectangle {
                             width: 130px;
-                            height: 30px;
+                            height: 25px;
                             horizontal-stretch: 1;
                             background: rgb(226,226,226);
                             border-radius: 5px;
-                            padding: 5px;
                             HorizontalLayout {
                                 alignment: start;
                                 padding: 5px;
                                 Image {
                                     horizontal-stretch: 0;
                                     source: @image-url("assets/icon/search.svg");
-                                    width: 20px;
-                                    height: 20px;
+                                    width: 15px;
+                                    height: 15px;
                                 }
 
                                 TextInput {
@@ -212,15 +211,15 @@ export component Main inherits BorderlessWindow {
                         }
                         //加号框
                         Rectangle {
-                            width: 30px;
-                            height: 30px;
+                            width: 25px;
+                            height: 25px;
                             background: rgb(226,226,226);
                             border-radius: 5px;
                             padding: 5px;
                             Image {
                                 source: @image-url("assets/icon/more.svg");
-                                width: 20px;
-                                height: 20px;
+                                width: 15px;
+                                height: 15px;
                             }
                         }
                     }
