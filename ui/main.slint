@@ -3,10 +3,13 @@ import { BorderlessWindow } from "component/borderless-window.slint";
 export component Main inherits BorderlessWindow {
     // 设置窗口标题
     title: "Me Chat";
-    icon: @image-url("assets/icon.svg");
+    icon: @image-url("assets/icon.png");
     // 设置窗口大小
     min-width: 700px;
     min-height: 500px;
+    in property <string> completion;
+    callback send-message(string, string);
+
     callback close-window();
     callback minimized-window(bool);
     callback maximized-window(bool);
@@ -201,12 +204,11 @@ export component Main inherits BorderlessWindow {
                                     width: 15px;
                                     height: 15px;
                                 }
-
                                 TextInput {
                                     horizontal-stretch: 1;
                                     width: 100px;
-                                    height: 20px;
-                                    font-size: 20px;
+                                    height: 15px;
+                                    font-size: 15px;
                                 }
                             }
                         }

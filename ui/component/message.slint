@@ -1,0 +1,41 @@
+
+export struct Content {  
+    type: int,//内容类型
+    id: string,//消息id
+    text: string,//文本
+    image: string,//图片
+    voice: string,//语音
+    video: string,//视频
+    file: string,//文件
+    location: string,//位置
+    card: string,//名片
+    redPacket: string,//红包
+    transfer: string,//转账
+    
+}
+export struct MessageData  {
+    type: int,//消息类型
+    id: string,//消息id
+    content: Content,//消息内容
+    time: string,//消息时间
+    status: int,//消息状态
+    isSelf: bool,//是否是自己发送的消息
+    isRead: bool,//是否已读
+    isShowTime: bool,//是否显示时间
+    isShowStatus: bool,//是否显示状态
+    isShowAvatar: bool,//是否显示头像
+    isShowName: bool,//是否显示名字
+    isShowContent: bool,//是否显示内容
+    isShowImage: bool,//是否显示图片
+    isShowVoice: bool,//是否显示语音
+    isShowVideo: bool,//是否显示视频
+    isShowFile: bool,//是否显示文件
+    isShowLocation: bool,//是否显示位置
+    isShowCard: bool,//是否显示名片
+    isShowRedPacket: bool,//是否显示红包
+    isShowTransfer: bool,//是否显示转账
+    isShowGroupNotice: bool,//是否显示群通知
+}
+export component Message inherits Rectangle{
+
+}
