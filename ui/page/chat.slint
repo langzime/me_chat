@@ -1,0 +1,402 @@
+export component Chat inherits Rectangle{ 
+    horizontal-stretch: 1;
+    callback process-drag-event(int,PointerEvent,length,length);
+    callback minimized-window(bool);
+    callback maximized-window(bool);
+    callback close-window();
+    in-out property <bool> is-maximized: false;
+    HorizontalLayout {
+        alignment: stretch;
+        //消息列表
+        Rectangle {
+            background: rgb(247,247,247);
+            width: 200px;
+            height: 100%;
+            border-width: 1px;
+            border-color: rgb(214,214,214);
+            VerticalLayout {
+                Rectangle {
+                    height: 28px;
+                    background: transparent;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            root.process-drag-event(0,ev,self.x,self.y);
+                        }
+                    }
+                }
+
+                Rectangle {
+                    background: transparent;
+                    height: 35px;
+                    HorizontalLayout {
+                        alignment: space-around;
+                        //搜索框
+                        Rectangle {
+                            width: 130px;
+                            height: 25px;
+                            horizontal-stretch: 1;
+                            background: rgb(226,226,226);
+                            border-radius: 5px;
+                            HorizontalLayout {
+                                alignment: start;
+                                padding: 5px;
+                                Image {
+                                    horizontal-stretch: 0;
+                                    source: @image-url("../assets/icon/search.svg");
+                                    width: 15px;
+                                    height: 15px;
+                                }
+                                TextInput {
+                                    horizontal-stretch: 1;
+                                    width: 100px;
+                                    height: 15px;
+                                    font-size: 15px;
+                                }
+                            }
+                        }
+                        //加号框
+                        Rectangle {
+                            width: 25px;
+                            height: 25px;
+                            background: rgb(226,226,226);
+                            border-radius: 5px;
+                            padding: 5px;
+                            Image {
+                                source: @image-url("../assets/icon/more.svg");
+                                width: 15px;
+                                height: 15px;
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    horizontal-stretch: 1;
+                    VerticalLayout {
+                        Rectangle {
+                            height: 65px;
+                            background: rgb(222,221,220);
+                            HorizontalLayout {
+                                Rectangle {
+                                    width: 60px;
+                                    height: 65px;
+                                    padding-left: 10px;
+                                    Image {
+                                        source: @image-url("../assets/tensor.jpg");
+                                        width: 40px;
+                                        height: 40px;
+                                    }
+                                }
+
+                                Rectangle {
+                                    min-width: 70px;
+                                    horizontal-stretch: 1;
+                                    VerticalLayout {
+                                        Rectangle {
+                                            Text {
+                                                x: 0px;
+                                                y: 15px;
+                                                text: "文件传输助手";
+                                                font-size: 13px;
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            Text {
+                                                x: 0px;
+                                                text: "aabb";
+                                                color: rgb(167,167,167);
+                                                font-size: 12px;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    max-width: 60px;
+                                    VerticalLayout {
+                                        Rectangle {
+                                            height: 35px;
+                                            Text {
+                                                text: "昨天";
+                                                y: 15px;
+                                                color: rgb(167,167,167);
+                                                font-size: 12px;
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            height: 30px;
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    width: 10px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //聊天框
+        Rectangle {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            min-width: 444px;
+            height: 100%;
+            horizontal-stretch: 1;
+            background: rgb(245,245,245);
+            VerticalLayout {
+                //标题栏拖拽区域
+                Rectangle {
+                    horizontal-stretch: 0;
+                    height: 20px;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            root.process-drag-event(0,ev,self.x,self.y);
+                        }
+                    }
+                    //标题栏工具区域
+                    HorizontalLayout {
+                        alignment: end;
+                        //最小化按钮
+                        Rectangle {
+                            Rectangle {
+                                border-radius: 3px;
+                                width: 24px;
+                                height: 24px;
+                                background: transparent;
+                                touch-minize := TouchArea {
+                                    clicked => {
+                                        root.minimized-window(true)
+                                    }
+                                }
+
+                                Text {
+                                    color: rgba(79,79,79,0.8);
+                                    text: "-";
+                                    font-size: 24px;
+                                }
+                            }
+
+                            width: 30px;
+                        }
+                        //最大化按钮
+                        Rectangle {
+                            Rectangle {
+                                border-radius: 3px;
+                                width: 24px;
+                                height: 24px;
+                                background: transparent;
+                                touch-maximized := TouchArea {
+                                    clicked => {
+                                        root.is-maximized = !root.is-maximized;
+                                        root.maximized-window(root.is-maximized);
+                                    }
+                                }
+
+                                Text {
+                                    color: rgba(79,79,79,0.8);
+                                    text: root.is-maximized ? "❐" : "□";
+                                    font-size: 24px;
+                                }
+                            }
+
+                            width: 30px;
+                        }
+                        //关闭按钮
+                        Rectangle {
+                            Rectangle {
+                                border-radius: 3px;
+                                y: 1px;
+                                width: 24px;
+                                height: 24px;
+                                background: transparent;
+                                touch-close := TouchArea {
+                                    clicked => {
+                                        root.close-window()
+                                    }
+                                }
+
+                                Text {
+                                    color: rgba(79,79,79,0.8);
+                                    text: "×";
+                                    font-size: 24px;
+                                }
+                            }
+
+                            width: 30px;
+                        }
+                    }
+                }
+                //标题栏
+                Rectangle {
+                    horizontal-stretch: 0;
+                    height: 43px;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            root.process-drag-event(0,ev,self.x,self.y);
+                        }
+                    }
+                    //标题栏工具区域
+                    HorizontalLayout {
+                        alignment: start;
+                        //聊天名
+                        Rectangle {
+                            min-width: 400px;
+                            horizontal-stretch: 1;
+                            Text {
+                                x: 20px;
+                                y: 0px;
+                                text: "文件传输助手";
+                                font-size: 18px;
+                            }
+                        }
+                        //三个点
+                        Rectangle {
+                            width: 30px;
+                        }
+                    }
+                }
+                //分割线
+                Rectangle {
+                    background: rgb(214,214,214);
+                    height: 1px;
+                }
+                //聊天内容
+                Rectangle {
+                    horizontal-stretch: 1;
+                }
+                //分割线
+                Rectangle {
+                    background: rgba(214,214,214,0.5);
+                    height: 1px;
+                }
+                //输入区域
+                Rectangle {
+                    height: 130px;
+                    background: rgb(245,245,245);
+                    VerticalLayout {
+                        //工具栏
+                        Rectangle {
+                            height: 40px;
+                            HorizontalLayout 
+                            {
+                                //表情工具栏区域
+                                Rectangle {
+                                                min-width: 300px;
+                                                horizontal-stretch: 1;
+                                                HorizontalLayout {
+                                                    alignment: start;
+                                                    Rectangle {
+                                                        horizontal-stretch: 0;
+                                                        width: 40px;
+                                                        Image {
+                                                            source: @image-url("../assets/icon/biaoqing.svg");
+                                                            width: 20px;
+                                                            height: 20px;
+                                                        }
+                                                    }
+
+                                                    Rectangle {
+                                                        horizontal-stretch: 0;
+                                                        width: 40px;
+                                                        Image {
+                                                            source: @image-url("../assets/icon/wenjian.svg");
+                                                            width: 20px;
+                                                            height: 20px;
+                                                        }
+                                                    }
+
+                                                    Rectangle {
+                                                        horizontal-stretch: 0;
+                                                        width: 40px;
+                                                        Image {
+                                                            source: @image-url("../assets/icon/jiandao.svg");
+                                                            width: 20px;
+                                                            height: 20px;
+                                                        }
+                                                    }
+
+                                                    Rectangle {
+                                                        horizontal-stretch: 0;
+                                                        width: 40px;
+                                                        Image {
+                                                            source: @image-url("../assets/icon/jilu.svg");
+                                                            width: 20px;
+                                                            height: 20px;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                //音视频工具栏区域
+                                Rectangle {
+                                                width: 100px;
+                                                HorizontalLayout {
+                                                    Rectangle {
+                                                        horizontal-stretch: 0;
+                                                        width: 40px;
+                                                        Image {
+                                                            source: @image-url("../assets/icon/yuyin.svg");
+                                                            width: 20px;
+                                                            height: 20px;
+                                                        }
+                                                    }
+
+                                                    Rectangle {
+                                                        horizontal-stretch: 0;
+                                                        width: 40px;
+                                                        Image {
+                                                            source: @image-url("../assets/icon/shipin.svg");
+                                                            width: 20px;
+                                                            height: 20px;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                            }
+                        }
+                        //输入框
+                        HorizontalLayout {
+                            padding-left: 15px;
+                            padding-right: 15px;
+                            Rectangle {
+                                    height: 45px;
+                                    TextInput {
+                                        height: 45px;
+                                        font-size: 20px;
+                                        wrap: word-wrap;
+                                    }
+                            }
+                        }
+                        //发送按钮
+                        Rectangle {
+                                height: 35px;
+                                HorizontalLayout {
+                                    alignment: end;
+                                    padding-right: 28px;
+                                    Rectangle {
+                                        width: 100px;
+                                        height: 35px;
+                                        background: rgb(233,233,233);
+                                        border-radius: 5px;
+                                        Text {
+                                            text: "发送(S)";
+                                            color: rgb(7,193,96);
+                                        }
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                height: 10px;
+                            }
+                        
+                    }
+                }
+            }
+        }
+    }
+ }
