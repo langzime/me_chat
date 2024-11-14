@@ -1,4 +1,5 @@
 import { BorderlessWindow } from "component/borderless-window.slint";
+import { SideBar } from "component/side_bar.slint";
 
 export component Main inherits BorderlessWindow {
     // 设置窗口标题
@@ -31,137 +32,10 @@ export component Main inherits BorderlessWindow {
     HorizontalLayout {
         alignment: stretch;
         //工具栏
-        Rectangle {
-            background: rgb(46,46,46);
-            width: 55px;
-            height: 100%;
-            border-top-left-radius: 3px;
-            border-bottom-left-radius: 3px;
-            border-color: rgb(46,46,46);
-            border-width: 0px;
+        side-bar := SideBar {
             TouchArea {
                 pointer-event(ev) => {
                     root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
-                }
-            }
-
-            VerticalLayout {
-                height: 100%;
-              //头像
-              Rectangle {
-                    vertical-stretch: 0;
-                    height: 80px;
-                    padding-top: 30px;
-                    Image {
-                        source: @image-url("assets/avatar.jpg");
-                        width: 40px;
-                        height: 40px;
-                    }
-                }
-              //上工具栏
-              Rectangle {
-                    vertical-stretch: 1;
-                    min-height: 260px;
-                    background: transparent;
-                    Rectangle {
-                        height: 100%;
-                        vertical-stretch: 1;
-                        VerticalLayout {
-                            alignment: start;
-                            Rectangle {
-                                height: 40px;
-                                Image {
-                                    source: @image-url("assets/icon/home.svg");
-                                    width: 25px;
-                                    height: 25px;
-                                }
-                            }
-
-                            Rectangle {
-                                height: 40px;
-                                Image {
-                                    source: @image-url("assets/icon/contact.svg");
-                                    width: 25px;
-                                    height: 25px;
-                                }
-                            }
-
-                            Rectangle {
-                                height: 40px;
-                                Image {
-                                    source: @image-url("assets/icon/collect.svg");
-                                    width: 23px;
-                                    height: 25px;
-                                }
-                            }
-
-                            Rectangle {
-                                height: 40px;
-                                Image {
-                                    source: @image-url("assets/icon/folder.svg");
-                                    width: 23px;
-                                    height: 25px;
-                                }
-                            }
-
-                            Rectangle {
-                                height: 40px;
-                                Image {
-                                    source: @image-url("assets/icon/circle.svg");
-                                    width: 21px;
-                                    height: 23px;
-                                }
-                            }
-
-                            Rectangle {
-                                height: 40px;
-                                Image {
-                                    source: @image-url("assets/icon/video.svg");
-                                    width: 25px;
-                                    height: 25px;
-                                }
-                            }
-                        }
-                    }
-                }
-              //下工具栏
-              Rectangle {
-                    vertical-stretch: 0;
-                    height: 130px;
-                    background: transparent;
-                    VerticalLayout {
-                        alignment: end;
-                        Rectangle {
-                            height: 40px;
-                            Image {
-                                source: @image-url("assets/icon/mini.svg");
-                                width: 23px;
-                                height: 23px;
-                            }
-                        }
-
-                        Rectangle {
-                            height: 40px;
-                            Image {
-                                source: @image-url("assets/icon/phone.svg");
-                                width: 25px;
-                                height: 25px;
-                            }
-                        }
-
-                        Rectangle {
-                            height: 40px;
-                            Image {
-                                source: @image-url("assets/icon/setting.svg");
-                                width: 25px;
-                                height: 25px;
-                            }
-                        }
-
-                        Rectangle {
-                            height: 20px;
-                        }
-                    }
                 }
             }
         }
@@ -253,7 +127,9 @@ export component Main inherits BorderlessWindow {
                                         Rectangle {
                                             Text {
                                                 x: 0px;
+                                                y: 15px;
                                                 text: "文件传输助手";
+                                                font-size: 13px;
                                             }
                                         }
 
@@ -275,6 +151,7 @@ export component Main inherits BorderlessWindow {
                                             height: 35px;
                                             Text {
                                                 text: "昨天";
+                                                y: 15px;
                                                 color: rgb(167,167,167);
                                                 font-size: 12px;
                                             }
@@ -307,7 +184,7 @@ export component Main inherits BorderlessWindow {
                 //标题栏拖拽区域
                 Rectangle {
                     horizontal-stretch: 0;
-                    height: 28px;
+                    height: 20px;
                     TouchArea {
                         pointer-event(ev) => {
                             root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
@@ -365,7 +242,7 @@ export component Main inherits BorderlessWindow {
                         Rectangle {
                             Rectangle {
                                 border-radius: 3px;
-                                y: 5px;
+                                y: 1px;
                                 width: 24px;
                                 height: 24px;
                                 background: transparent;
@@ -389,7 +266,12 @@ export component Main inherits BorderlessWindow {
                 //标题栏
                 Rectangle {
                     horizontal-stretch: 0;
-                    height: 40px;
+                    height: 43px;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                        }
+                    }
                     //标题栏工具区域
                     HorizontalLayout {
                         alignment: start;
@@ -401,7 +283,7 @@ export component Main inherits BorderlessWindow {
                                 x: 20px;
                                 y: 0px;
                                 text: "文件传输助手";
-                                font-size: 20px;
+                                font-size: 18px;
                             }
                         }
                         //三个点
