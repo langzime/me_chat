@@ -41,8 +41,19 @@ export component Main inherits BorderlessWindow {
             }
         }
         chat-page :=  Chat {
+            border-width: 1px;
+            border-color: rgb(214,214,214);
             process-drag-event(type,ev,x,y) => {
                 root.process-drag-event(type, ev, x, y);
+            }
+            minimized-window(enable) => {
+                root.minimized-window(enable);
+            }
+            maximized-window(enable) => {
+                root.maximized-window(enable);
+            }
+            close-window() => {
+                root.close-window();
             }
         }
     }
