@@ -20,7 +20,7 @@ export component Chat inherits Rectangle{
                     background: transparent;
                     TouchArea {
                         pointer-event(ev) => {
-                            root.process-drag-event(0,ev,self.x,self.y);
+                            root.process-drag-event(0,ev,self.mouse-x, self.mouse-y);
                         }
                     }
                 }
@@ -155,7 +155,7 @@ export component Chat inherits Rectangle{
                     height: 20px;
                     TouchArea {
                         pointer-event(ev) => {
-                            root.process-drag-event(0,ev,self.x,self.y);
+                            root.process-drag-event(0,ev,self.mouse-x, self.mouse-y);
                         }
                     }
                     //标题栏工具区域
@@ -237,7 +237,7 @@ export component Chat inherits Rectangle{
                     height: 43px;
                     TouchArea {
                         pointer-event(ev) => {
-                            root.process-drag-event(0,ev,self.x,self.y);
+                            root.process-drag-event(0,ev,self.mouse-x, self.mouse-y);
                         }
                     }
                     //标题栏工具区域
