@@ -3,6 +3,8 @@ import { ChatItem } from "../store.slint";
 export component ChatMessageList inherits Rectangle {
     callback process-drag-event(int,PointerEvent,length,length);
     in property <[ChatItem]> chat-list;
+    //当前选中的聊天
+    in-out property <ChatItem> current-chat;
     VerticalLayout {
         Rectangle {
             height: 28px;
@@ -64,7 +66,13 @@ export component ChatMessageList inherits Rectangle {
             VerticalLayout {
                 for chat in chat-list: ChatMessageItem {
                     height: 65px;
-                    background: rgb(222,221,220);
+                    background:root.current-chat.id==chat.id?rgb(199,198,197) :touch.has-hover?  rgb(208,207,207): rgb(222,221,220);
+                    chat-item: chat;
+                    touch := TouchArea {
+                        clicked => {
+                            root.current-chat = chat;
+                        }
+                    }
                 }
             }
         }

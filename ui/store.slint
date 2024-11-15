@@ -19,8 +19,12 @@ export struct IconItem {
 }
 //左侧聊天列表
 export struct ChatItem {
+    id: string,
+    name: string,
+    avatar: image,
     text: string,
     text-type: string,
+    time: string,
 }
 
 export struct MessageItem {
@@ -51,8 +55,19 @@ export global Store {
 
     in-out property <TabIndex> current-tab-index: TabIndex.Chat;//当前选中的tab
     in-out property <[ChatItem]> chat-items: [{
-        text: "文件传输助手",
+        id: "1",
+        name: "文件传输助手",
+        avatar: @image-url("assets/tensor.jpg"),
+        text: "你好",
         text-type: "text",
+        time:"昨天",
+    },{
+        id: "2",
+        name: "文件传输助手2号",
+        avatar: @image-url("assets/tensor.jpg"),
+        text: "你好2",
+        text-type: "text",
+        time:"昨天",
     }];//聊天列表
     in-out property <[MessageItem]> message-items: [{
         text: "文件传输助手",

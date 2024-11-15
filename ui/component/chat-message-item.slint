@@ -1,17 +1,18 @@
 
+import { ChatItem } from "../store.slint";
 export component ChatMessageItem inherits Rectangle{
+    in property <ChatItem> chat-item;
     HorizontalLayout {
         Rectangle {
             width: 60px;
             height: 65px;
             padding-left: 10px;
             Image {
-                source: @image-url("../assets/tensor.jpg");
+                source: chat-item.avatar;
                 width: 40px;
                 height: 40px;
             }
         }
-
         Rectangle {
             min-width: 70px;
             horizontal-stretch: 1;
@@ -20,29 +21,28 @@ export component ChatMessageItem inherits Rectangle{
                     Text {
                         x: 0px;
                         y: 15px;
-                        text: "文件传输助手";
+                        text:chat-item.name;
                         font-size: 13px;
                     }
                 }
-
                 Rectangle {
                     Text {
                         x: 0px;
-                        text: "aabb";
+                        y: 5px;
+                        text: chat-item.text;
                         color: rgb(167,167,167);
                         font-size: 12px;
                     }
                 }
             }
         }
-
         Rectangle {
             max-width: 60px;
             VerticalLayout {
                 Rectangle {
                     height: 35px;
                     Text {
-                        text: "昨天";
+                        text:chat-item.time;
                         y: 15px;
                         color: rgb(167,167,167);
                         font-size: 12px;
@@ -54,7 +54,6 @@ export component ChatMessageItem inherits Rectangle{
                 }
             }
         }
-
         Rectangle {
             width: 10px;
         }
