@@ -1,0 +1,7 @@
+export component DraggableRectangle inherits Rectangle{
+    callback process-drag-event(int,PointerEvent,length,length);
+    callback close-window();
+    callback minimized-window(bool);
+    callback maximized-window(bool);
+    in-out property <bool> is-maximized: false;
+}   

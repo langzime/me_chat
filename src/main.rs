@@ -29,7 +29,6 @@ fn main() -> Result<()> {
         let logical_pos = main.window().position().to_logical(main.window().scale_factor());
         main.window().set_position(LogicalPosition::new(logical_pos.x + offset_x, logical_pos.y + offset_y));
     });
-
     main.run()?;
     Ok(())
 }

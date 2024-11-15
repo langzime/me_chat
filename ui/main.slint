@@ -1,7 +1,7 @@
-import { BorderlessWindow } from "component/borderless-window.slint";
-import { SideBar } from "component/side_bar.slint";
-import { Chat } from "page/chat.slint";
-
+import { BorderlessWindow } from "component/base/borderless-window.slint";
+import { SideBar } from "component/base/side-bar.slint";
+import { Home } from "page/home.slint";
+import { TabIndex } from "./store.slint";
 export component Main inherits BorderlessWindow {
     // 设置窗口标题
     title: "Me Chat";
@@ -9,7 +9,6 @@ export component Main inherits BorderlessWindow {
     // 设置窗口大小
     min-width: 700px;
     min-height: 500px;
-    in property <string> completion;
     callback send-message(string, string);
 
     callback close-window();
@@ -34,13 +33,26 @@ export component Main inherits BorderlessWindow {
         alignment: stretch;
         //工具栏
         side-bar := SideBar {
+            icon-items:[
+                {item: {id: TabIndex.Chat, text: "聊天", icon: @image-url("assets/icon/chat.svg")}},
+                {item: {id: TabIndex.Collect, text: "联系人", icon: @image-url("assets/icon/contact.svg")}},
+                {item: {id: TabIndex.Collect, text: "收藏", icon: @image-url("assets/icon/collect.svg")}},
+                {item: {id: TabIndex.File, text: "文件", icon: @image-url("assets/icon/folder.svg")}},
+                {item: {id: TabIndex.Circle, text: "朋友圈", icon: @image-url("assets/icon/circle.svg")}},
+                {item: {id: TabIndex.Video, text: "视频号", icon: @image-url("assets/icon/video.svg")}},
+            ];
+            setting-items:[
+                {item: {id: TabIndex.Mini, text: "小程序", icon: @image-url("assets/icon/mini.svg")}},
+                {item: {id: TabIndex.Phone, text: "电话", icon: @image-url("assets/icon/phone.svg")}},
+                {item: {id: TabIndex.Setting, text: "设置", icon: @image-url("assets/icon/setting.svg")}},
+            ];
             TouchArea {
                 pointer-event(ev) => {
                     root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
                 }
             }
         }
-        chat-page :=  Chat {
+        home-page :=  Home {
             process-drag-event(type,ev,x,y) => {
                 root.process-drag-event(type, ev, x, y);
             }

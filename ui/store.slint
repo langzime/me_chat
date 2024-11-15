@@ -1,8 +1,23 @@
-export struct IconItem {
-    text: string,
-    text-type: string,
+export enum TabIndex {
+    None,//无
+    Chat,//聊天
+    Contacts,//联系人
+    Collect,//收藏
+    File,//文件
+    Circle,//朋友圈
+    Video,//视频号
+    Mini,//小程序
+    Phone,//电话
+    Setting,//设置
 }
 
+//图标列表
+export struct IconItem {
+    id:TabIndex, //唯一标识
+    text: string,//描述文本
+    icon: image,//图标
+}
+//左侧聊天列表
 export struct ChatItem {
     text: string,
     text-type: string,
@@ -12,8 +27,36 @@ export struct MessageItem {
     text: string,
     text-type: string,
 }
+//用户信息
+export struct UserInfo {
+    name: string,//用户名
+    avatar: image,//用户头像
+    signature: string,//用户签名
+    background: image,//用户背景
+    phone: string,//用户手机号
+    email: string,//用户邮箱
+}
 
+//全局状态
 export global Store {
+    //用户信息
+    in-out property <UserInfo> user-info: {
+        name: "张三",
+        avatar: @image-url("assets/avatar.jpg"),
+        signature: "这个人很懒，什么都没留下",
+        background: @image-url("assets/background.jpg"),
+        phone: "13888888888",
+        email: "",
+    };
 
+    in-out property <TabIndex> current-tab-index: TabIndex.Chat;//当前选中的tab
+    in-out property <[ChatItem]> chat-items: [{
+        text: "文件传输助手",
+        text-type: "text",
+    }];//聊天列表
+    in-out property <[MessageItem]> message-items: [{
+        text: "文件传输助手",
+        text-type: "text",
+    }];//消息列表
 
 }

@@ -1,0 +1,43 @@
+import { ChatMessageList } from "../component/chat-message-list.slint";
+import { DraggableRectangle } from "../component/base/draggable-rectangle.slint";
+import { ChatBox } from "../component/chat-box.slint";
+import { Store } from "../store.slint";
+export component Home inherits DraggableRectangle{ 
+    horizontal-stretch: 1;
+    HorizontalLayout {
+        alignment: stretch;
+        //消息列表
+        ChatMessageList {
+            background: rgb(247,247,247);
+            width: 200px;
+            height: 100%;
+            border-width: 1px;
+            border-color: rgb(214,214,214);
+            process-drag-event(idx,ev,x,y) => {
+                root.process-drag-event(idx,ev,x,y);
+            }
+            chat-list: Store.chat-items;
+        }
+        //聊天框
+        ChatBox {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            min-width: 444px;
+            height: 100%;
+            horizontal-stretch: 1;
+            background: rgb(245,245,245);
+            process-drag-event(idx,ev,x,y) => {
+                root.process-drag-event(idx,ev,x,y);
+            }
+            minimized-window(enable) => {
+                root.minimized-window(enable);
+            }
+            maximized-window(enable) => {
+                root.maximized-window(enable);
+            }
+            close-window => {
+                root.close-window();
+            }
+        }
+    }
+ }

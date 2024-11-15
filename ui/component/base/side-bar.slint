@@ -1,0 +1,68 @@
+import { IconItem,Store } from "../../store.slint";
+export component SideBar inherits Rectangle{
+    in property <[{item:IconItem}]> icon-items;
+    in property <[{item:IconItem}]> setting-items;
+    background: rgb(46,46,46);
+    width: 55px;
+    height: 100%;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-color: rgb(46,46,46);
+    border-width: 0px;
+    VerticalLayout {
+        height: 100%;
+      //头像
+      Rectangle {
+            vertical-stretch: 0;
+            height: 80px;
+            padding-top: 30px;
+            Image {
+                source: Store.user-info.avatar;
+                width: 40px;
+                height: 40px;
+            }
+        }
+      //上工具栏
+      Rectangle {
+            vertical-stretch: 1;
+            min-height: 260px;
+            background: transparent;
+            Rectangle {
+                height: 100%;
+                vertical-stretch: 1;
+                VerticalLayout {
+                    alignment: start;
+                    for icon in icon-items: Rectangle {
+                        height: 40px;
+                        Image {
+                            source: icon.item.icon;
+                            width: 25px;
+                            height: 25px;
+                        }
+                    }
+                }
+            }
+        }
+      //下工具栏
+      Rectangle {
+            vertical-stretch: 0;
+            height: 130px;
+            background: transparent;
+            VerticalLayout {
+                alignment: end;
+                for icon in setting-items: Rectangle {
+                    height: 40px;
+                    Image {
+                        source: icon.item.icon;
+                        width: 25px;
+                        height: 25px;
+                    }
+                }
+                Rectangle {
+                    height: 20px;
+                }
+            }
+        }
+    }
+
+ } 

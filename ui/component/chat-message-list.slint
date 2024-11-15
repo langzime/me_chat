@@ -1,0 +1,72 @@
+import { ChatMessageItem } from "chat-message-item.slint";
+import { ChatItem } from "../store.slint";
+export component ChatMessageList inherits Rectangle {
+    callback process-drag-event(int,PointerEvent,length,length);
+    in property <[ChatItem]> chat-list;
+    VerticalLayout {
+        Rectangle {
+            height: 28px;
+            background: transparent;
+            TouchArea {
+                pointer-event(ev) => {
+                    root.process-drag-event(0,ev,self.mouse-x, self.mouse-y);
+                }
+            }
+        }
+        //搜索框
+        Rectangle {
+            background: transparent;
+            height: 35px;
+            HorizontalLayout {
+                alignment: space-around;
+                //搜索框
+                Rectangle {
+                    width: 130px;
+                    height: 25px;
+                    horizontal-stretch: 1;
+                    background: rgb(226,226,226);
+                    border-radius: 5px;
+                    HorizontalLayout {
+                        alignment: start;
+                        padding: 5px;
+                        Image {
+                            horizontal-stretch: 0;
+                            source: @image-url("../assets/icon/search.svg");
+                            width: 15px;
+                            height: 15px;
+                        }
+                        TextInput {
+                            horizontal-stretch: 1;
+                            width: 100px;
+                            height: 15px;
+                            font-size: 15px;
+                        }
+                    }
+                }
+                //加号框
+                Rectangle {
+                    width: 25px;
+                    height: 25px;
+                    background: rgb(226,226,226);
+                    border-radius: 5px;
+                    padding: 5px;
+                    Image {
+                        source: @image-url("../assets/icon/more.svg");
+                        width: 15px;
+                        height: 15px;
+                    }
+                }
+            }
+        }
+        //聊天列表
+        Rectangle {
+            horizontal-stretch: 1;
+            VerticalLayout {
+                for chat in chat-list: ChatMessageItem {
+                    height: 65px;
+                    background: rgb(222,221,220);
+                }
+            }
+        }
+    }
+}

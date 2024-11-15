@@ -1,0 +1,62 @@
+
+export component ChatMessageItem inherits Rectangle{
+    HorizontalLayout {
+        Rectangle {
+            width: 60px;
+            height: 65px;
+            padding-left: 10px;
+            Image {
+                source: @image-url("../assets/tensor.jpg");
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        Rectangle {
+            min-width: 70px;
+            horizontal-stretch: 1;
+            VerticalLayout {
+                Rectangle {
+                    Text {
+                        x: 0px;
+                        y: 15px;
+                        text: "文件传输助手";
+                        font-size: 13px;
+                    }
+                }
+
+                Rectangle {
+                    Text {
+                        x: 0px;
+                        text: "aabb";
+                        color: rgb(167,167,167);
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            max-width: 60px;
+            VerticalLayout {
+                Rectangle {
+                    height: 35px;
+                    Text {
+                        text: "昨天";
+                        y: 15px;
+                        color: rgb(167,167,167);
+                        font-size: 12px;
+                    }
+                }
+
+                Rectangle {
+                    height: 30px;
+                }
+            }
+        }
+
+        Rectangle {
+            width: 10px;
+        }
+    }
+}
