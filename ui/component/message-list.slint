@@ -1,3 +1,15 @@
+import { MessageInfo } from "message-info.slint";
+import { MessageItem } from "../store.slint";
 export component MessageList inherits Rectangle{
-    
+    in property <[MessageItem]> message-list;
+        VerticalLayout{
+            height: 100%;
+            for message in message-list: MessageInfo {
+                height: 50px;
+                message-item: message;
+            }
+            Rectangle {
+                vertical-stretch: 1;
+            }
+        }
 }

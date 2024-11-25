@@ -1,8 +1,9 @@
 import { ChatMessageList } from "../component/chat-message-list.slint";
 import { DraggableRectangle } from "../component/base/draggable-rectangle.slint";
 import { ChatBox } from "../component/chat-box.slint";
-import { Store } from "../store.slint";
+import { Store,MessageItem } from "../store.slint";
 export component Home inherits DraggableRectangle{ 
+    in property <MessageItem> message-item;
     horizontal-stretch: 1;
     HorizontalLayout {
         alignment: stretch;
@@ -20,6 +21,7 @@ export component Home inherits DraggableRectangle{
         }
         //聊天框
         ChatBox {
+            message-list: Store.message-items;
             border-top-right-radius: 3px;
             border-bottom-right-radius: 3px;
             min-width: 444px;

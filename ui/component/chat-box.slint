@@ -1,6 +1,8 @@
 import { DraggableRectangle } from "./base/draggable-rectangle.slint";
 import { MessageList } from "message-list.slint";
+import { MessageItem } from "../store.slint";
 export component ChatBox inherits DraggableRectangle{
+    in property <[MessageItem]> message-list;
     VerticalLayout {
         //标题栏拖拽区域
         Rectangle {
@@ -120,7 +122,8 @@ export component ChatBox inherits DraggableRectangle{
         }
         //聊天内容
         MessageList {
-            horizontal-stretch: 1;
+            message-list: message-list;
+            vertical-stretch: 1;
         }
         //分割线
         Rectangle {

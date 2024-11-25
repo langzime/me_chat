@@ -1,0 +1,51 @@
+import { MessageItem } from "../store.slint";
+export component MessageInfo inherits Rectangle{
+    in property <MessageItem> message-item;
+    Rectangle {
+        width: 100%;
+        height: 50px;
+        HorizontalLayout {
+            Rectangle {
+                width: 60px;
+                height: 50px;
+                padding-left: 10px;
+                Image {
+                    source: @image-url("../assets/avatar.jpg");
+                    width: 40px;
+                    height: 40px;
+                }
+            }
+            Rectangle {
+                min-width: 70px;
+                horizontal-stretch: 1;
+                VerticalLayout {
+                    Rectangle {
+                        Text {
+                            x: 0px;
+                            y: 15px;
+                            text:message-item.text;
+                            font-size: 13px;
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                max-width: 60px;
+                VerticalLayout {
+                    Rectangle {
+                        height: 35px;
+                        Text {
+                            text:"昨天";
+                            y: 15px;
+                            color: rgb(167,167,167);
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+            Rectangle {
+                width: 10px;
+            }
+        }
+    }
+}
