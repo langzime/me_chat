@@ -1,51 +1,94 @@
 import { MessageItem } from "../store.slint";
 export component MessageInfo inherits Rectangle{
     in property <MessageItem> message-item;
+    property<color> message-background : message-item.send-type=="me" ? rgb(149,236,105) : rgb(255,255,255);
     Rectangle {
         width: 100%;
-        height: 50px;
-        HorizontalLayout {
+        height: 35px;
+        if message-item.text-type=="text":  HorizontalLayout {
+            if message-item.send-type=="other":Rectangle {
+                width: 20px;
+            }
+            if message-item.send-type=="other":Rectangle {
+                width: 50px;
+                height: 35px;
+                Image {
+                    source: @image-url("../assets/avatar.jpg");
+                    width: 35px;
+                    height: 35px;
+                }
+            }
+            if message-item.send-type=="other":Path {
+                width: 8px;
+                height: 35px;
+        
+                // 路径数据
+                commands: "M 10 50 L 99 99 L 99 1  Z";
+                // 填充颜色
+                fill:  message-background;
+            }
+            if message-item.send-type=="other":Rectangle {
+                background: message-background;
+                border-radius: 5px;
+                horizontal-stretch: 0;
+                width: text.width + 20px;
+                text:= Text {
+                    x: 10px;
+                    y: 10px;
+                    text:message-item.text;
+                    font-size: 13px;
+                }
+            }
+            Rectangle {
+                min-width: 25px;
+                horizontal-stretch: 1;
+            }
+            if message-item.send-type=="me":Rectangle {
+                background: message-background;
+                border-radius: 5px;
+                horizontal-stretch: 0;
+                width: text-me.width + 20px;
+                text-me:= Text {
+                    x: 10px;
+                    y: 10px;
+                    text:message-item.text;
+                    font-size: 13px;
+                }
+            }
+            if message-item.send-type=="me":Path {
+                width: 8px;
+                height: 35px;
+        
+                // 路径数据
+                commands: "M 99 50 L 0 99 L 0 1  Z";
+                // 填充颜色
+                fill:  message-background;
+            }
+            if message-item.send-type=="me":Rectangle {
+                width: 50px;
+                height: 35px;
+                Image {
+                    source: @image-url("../assets/avatar.jpg");
+                    width: 35px;
+                    height: 35px;
+                }
+            }
+            if message-item.send-type=="me":Rectangle {
+                width: 20px;
+            }
+        }
+        if message-item.text-type=="system":  HorizontalLayout {
             Rectangle {
                 width: 60px;
                 height: 50px;
-                padding-left: 10px;
+                padding-left: 25px;
                 Image {
                     source: @image-url("../assets/avatar.jpg");
-                    width: 40px;
-                    height: 40px;
+                    width: 36px;
+                    height: 36px;
                 }
-            }
-            Rectangle {
-                min-width: 70px;
-                horizontal-stretch: 1;
-                VerticalLayout {
-                    Rectangle {
-                        Text {
-                            x: 0px;
-                            y: 15px;
-                            text:message-item.text;
-                            font-size: 13px;
-                        }
-                    }
-                }
-            }
-            Rectangle {
-                max-width: 60px;
-                VerticalLayout {
-                    Rectangle {
-                        height: 35px;
-                        Text {
-                            text:"昨天";
-                            y: 15px;
-                            color: rgb(167,167,167);
-                            font-size: 12px;
-                        }
-                    }
-                }
-            }
-            Rectangle {
-                width: 10px;
             }
         }
+
     }
 }

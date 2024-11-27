@@ -29,7 +29,10 @@ export struct ChatItem {
 
 export struct MessageItem {
     text: string,
+    avatar: image,
     text-type: string,
+    send-type: string,
+    time: string,
 }
 //用户信息
 export struct UserInfo {
@@ -71,7 +74,15 @@ export global Store {
     }];//聊天列表
     in-out property <[MessageItem]> message-items: [{
         text: "文件传输助手",
+        avatar: @image-url("assets/tensor.jpg"),
         text-type: "text",
+        send-type: "other",
+    },
+    {
+        text: "哈哈",
+        avatar: @image-url("assets/tensor.jpg"),
+        text-type: "text",
+        send-type: "me",
     }];//消息列表
 
 }
