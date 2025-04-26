@@ -19,6 +19,18 @@ pub struct FriendInfo {
     pub username: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ErrorResponse {
+    pub error: ErrorInfo,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ErrorInfo {
+    pub code: i32,
+    pub reason: String,
+    pub description: String,
+}
+
 pub struct NetworkClient {
     base_url: String,
     token: std::sync::Mutex<Option<String>>,
@@ -69,12 +81,26 @@ impl NetworkClient {
         let response = self.client
             .get(format!("{}/api/friends", self.base_url))
             .header("Authorization", format!("Bearer {}", token))
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
+            .header("Accept-Language", "zh-CN,zh;q=0.9")
+            .header("Cache-Control", "max-age=0")
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36")
+            .header("Upgrade-Insecure-Requests", "1")
+            .header("Proxy-Connection", "keep-alive")
             .send()
             .await?;
             
         println!("[DEBUG] Friend list response status: {}", response.status());
-        let response = response.json::<Vec<FriendInfo>>().await?;
-        println!("[DEBUG] Successfully got {} friends", response.len());
-        Ok(response)
+        let response_text = response.text().await?;
+        println!("[DEBUG] Friend list response body: {}", response_text);
+        
+        if response.status().is_success() {
+            let response = serde_json::from_str::<Vec<FriendInfo>>(&response_text)?;
+            println!("[DEBUG] Successfully got {} friends", response.len());
+            Ok(response)
+        } else {
+            let error = serde_json::from_str::<ErrorResponse>(&response_text)?;
+            Err(anyhow::anyhow!("Server error: {} - {}", error.error.reason, error.error.description))
+        }
     }
 } 
