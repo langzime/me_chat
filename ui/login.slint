@@ -1,9 +1,11 @@
 import { VerticalBox, HorizontalBox, LineEdit, Button } from "std-widgets.slint";
 import { BorderlessWindow } from "component/base/borderless-window.slint";
+import { FriendInfo } from "./store.slint";
 
 export component Login inherits BorderlessWindow {
     in-out property <string> username: "";
     in-out property <string> password: "";
+    in-out property <[FriendInfo]> friend-list: [];
     callback login();
 
     width: 400px;

@@ -2,6 +2,7 @@ use anyhow::Result;
 mod window_handler;
 mod config;
 mod network;
+use slint::{Image, SharedPixelBuffer};
 use window_handler::{WindowHandler, WindowEvents};
 use network::NetworkClient;
 use std::sync::Arc;
@@ -10,7 +11,8 @@ use tokio::runtime::Runtime;
 slint::slint!{
     import { Main } from "ui/main.slint";
     import { Login } from "ui/login.slint";
-    export { Main, Login }
+    import { Store,ChatItem } from "ui/store.slint";
+    export { Main , Login , Store,ChatItem }
 }   
 
 impl WindowEvents for Main {
@@ -35,7 +37,7 @@ fn main() -> Result<()> {
     window_handler.setup_window_events();
     
     // 从环境变量获取服务器地址，如果没有则使用默认值
-    let server_url = std::env::var("SERVER_URL").unwrap_or_else(|_| "http://localhost:8080".to_string());
+    let server_url = std::env::var("SERVER_URL").unwrap_or_else(|_| "http://3ye.co:32000".to_string());
     let network_client = Arc::new(NetworkClient::new(server_url));
     let rt = Runtime::new()?;
     
@@ -59,6 +61,27 @@ fn main() -> Result<()> {
                                 main_handler.setup_window_events();
                                 main_window.show().unwrap();
                                 app.window().hide().unwrap();
+                                //查询好友列表
+                                match client.get_friend_list().await {
+                                    Ok(friend_list) => {
+                                        let mut slint_friends = slint::VecModel::default();
+                                        for friend in friend_list {
+                                            slint_friends.push(ChatItem {
+                                                id: friend.id.to_string().into(),
+                                                name: friend.username.into(),
+                                                avatar:Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                                text: "".into(),
+                                                text_type: "text".into(),
+                                                time: "".into(),
+                                            });
+                                        }
+                                        let model_rc = slint::ModelRc::new(slint_friends);
+                                        main_window.global::<Store>().set_chat_items(model_rc);
+                                    }
+                                    Err(e) => {
+                                        println!("Get friend list failed: {}", e);
+                                    }
+                                }
                             }
                         } else {
                             // TODO: 显示错误消息

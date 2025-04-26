@@ -1,7 +1,13 @@
 import { BorderlessWindow } from "component/base/borderless-window.slint";
 import { SideBar } from "component/base/side-bar.slint";
 import { Home } from "page/home.slint";
-import { TabIndex } from "./store.slint";
+import { TabIndex, Store } from "./store.slint";
+
+export struct FriendInfo {
+    id: int,
+    username: string,
+}
+
 export component Main inherits BorderlessWindow {
     // 设置窗口标题
     title: "Me Chat";
@@ -9,14 +15,26 @@ export component Main inherits BorderlessWindow {
     // 设置窗口大小
     min-width: 700px;
     min-height: 500px;
+    
+    // 回调函数
     callback send-message(string, string);
-
+    callback select-chat(int, string);
+    callback send-file(string);
+    callback search-chat(string);
+    
     callback close-window();
     callback minimized-window(bool);
     callback maximized-window(bool);
     callback move-window(length, length);
     callback mouse-down(int, int);
     callback mouse-move(int, int);
+
+    // 添加搜索文本属性
+    in-out property <string> search-text: "";
+
+    // 添加好友列表属性
+    in-out property <[FriendInfo]> friend-list: [];
+
     on-close-window() => {
         close-window();
     }
