@@ -29,6 +29,63 @@ export component Login inherits BorderlessWindow {
     }
 
     Rectangle {
+        height: 30px;
+        background: transparent;
+        TouchArea {
+            pointer-event(ev) => {
+                root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+            }
+        }
+        HorizontalLayout {
+            alignment: end;
+            spacing: 5px;
+            padding-right: 5px;
+            Rectangle {
+                width: 20px;
+                height: 20px;
+                background: transparent;
+                Text {
+                    text: "-";
+                    color: gray;
+                }
+                TouchArea {
+                    clicked => {
+                        root.minimized-window(true);
+                    }
+                }
+            }
+            Rectangle {
+                width: 20px;
+                height: 20px;
+                background: transparent;
+                Text {
+                    text: root.is-maximized ? "❐" : "□";
+                    color: gray;
+                }
+                TouchArea {
+                    clicked => {
+                        root.maximized-window(!root.is-maximized);
+                    }
+                }
+            }
+            Rectangle {
+                width: 20px;
+                height: 20px;
+                background: transparent;
+                Text {
+                    text: "×";
+                    color: gray;
+                }
+                TouchArea {
+                    clicked => {
+                        root.close-window();
+                    }
+                }
+            }
+        }
+    }
+
+    Rectangle {
         background: white;
         width: 300px;
         height: 400px;
