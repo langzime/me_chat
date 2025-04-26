@@ -1,0 +1,76 @@
+import { VerticalBox, HorizontalBox, LineEdit, Button } from "std-widgets.slint";
+import { BorderlessWindow } from "component/base/borderless-window.slint";
+
+export component Login inherits BorderlessWindow {
+    in-out property <string> username: "";
+    in-out property <string> password: "";
+    callback login();
+
+    width: 400px;
+    height: 300px;
+    background: white;
+
+    callback close-window();
+    callback minimized-window(bool);
+    callback maximized-window(bool);
+    callback move-window(length, length);
+
+    on-close-window() => {
+        close-window();
+    }
+    on-minimized-window(enable) => {
+        minimized-window(enable);
+    }
+    on-maximized-window(enable) => {
+        maximized-window(enable);
+    }
+    on-move-window(offset-x, offset-y) => {
+        move-window(offset-x, offset-y);
+    }
+
+    Rectangle {
+        background: white;
+        VerticalBox {
+            spacing: 20px;
+            padding: 20px;
+
+            Text {
+                text: "欢迎登录";
+                font-size: 24px;
+                horizontal-alignment: center;
+            }
+
+            VerticalBox {
+                spacing: 10px;
+
+                Text {
+                    text: "用户名";
+                    font-size: 14px;
+                }
+
+                LineEdit {
+                    placeholder-text: "请输入用户名";
+                    text <=> root.username;
+                    padding: 8px;
+                }
+
+                Text {
+                    text: "密码";
+                    font-size: 14px;
+                }
+
+                LineEdit {
+                    placeholder-text: "请输入密码";
+                    text <=> root.password;
+                    padding: 8px;
+                }
+            }
+
+            Button {
+                text: "登录";
+                clicked => { root.login(); }
+                padding: 10px;
+            }
+        }
+    }
+}

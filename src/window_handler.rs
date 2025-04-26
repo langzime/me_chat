@@ -1,14 +1,20 @@
 use slint::{LogicalPosition, LogicalSize, Weak, ComponentHandle};
 use crate::config::WindowConfig;
-use crate::Main;
 
-pub struct WindowHandler {
-    window: Weak<Main>,
+pub trait WindowEvents {
+    fn on_close_window(&self, callback: impl Fn() + 'static);
+    fn on_minimized_window(&self, callback: impl Fn(bool) + 'static);
+    fn on_maximized_window(&self, callback: impl Fn(bool) + 'static);
+    fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static);
+}
+
+pub struct WindowHandler<T: ComponentHandle + WindowEvents + 'static> {
+    window: Weak<T>,
     config: WindowConfig,
 }
 
-impl WindowHandler {
-    pub fn new(window: Weak<Main>) -> Self {
+impl<T: ComponentHandle + WindowEvents + 'static> WindowHandler<T> {
+    pub fn new(window: Weak<T>) -> Self {
         Self {
             window,
             config: WindowConfig::default(),
@@ -27,27 +33,34 @@ impl WindowHandler {
     pub fn setup_window_events(&self) {
         let window = self.window.clone();
         self.window.upgrade().unwrap().on_close_window(move || {
-            window.upgrade().unwrap().window().hide().unwrap();
+            if let Some(win) = window.upgrade() {
+                win.window().hide().unwrap();
+            }
         });
 
         let window = self.window.clone();
         self.window.upgrade().unwrap().on_minimized_window(move |enable| {
-            window.upgrade().unwrap().window().set_minimized(enable);
+            if let Some(win) = window.upgrade() {
+                win.window().set_minimized(enable);
+            }
         });
 
         let window = self.window.clone();
         self.window.upgrade().unwrap().on_maximized_window(move |enable| {
-            window.upgrade().unwrap().window().set_maximized(enable);
+            if let Some(win) = window.upgrade() {
+                win.window().set_maximized(enable);
+            }
         });
 
         let window = self.window.clone();
-        self.window.upgrade().unwrap().on_move_window(move |offset_x, offset_y| {
-            let main = window.upgrade().unwrap();
-            let logical_pos = main.window().position().to_logical(main.window().scale_factor());
-            main.window().set_position(LogicalPosition::new(
-                logical_pos.x + offset_x,
-                logical_pos.y + offset_y,
-            ));
+        self.window.upgrade().unwrap().on_move_window(move |offset_x: f32, offset_y: f32| {
+            if let Some(win) = window.upgrade() {
+                let logical_pos = win.window().position().to_logical(win.window().scale_factor());
+                win.window().set_position(LogicalPosition::new(
+                    logical_pos.x + offset_x,
+                    logical_pos.y + offset_y,
+                ));
+            }
         });
     }
 } 
