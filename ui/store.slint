@@ -59,3 +59,10 @@ export global Store {
     in-out property <[ChatItem]> chat-items;//消息列表
     in-out property <[MessageItem]> message-items;//聊天消息列表
 }
+
+export global AppGlobal {
+    callback chat-selected(int);
+}
+export global Images {
+    in-out property <image> tensor: @image-url("assets/tensor.jpg");
+}

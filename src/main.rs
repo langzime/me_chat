@@ -1,10 +1,10 @@
 use anyhow::Result;
 mod window_handler;
 mod config;
-mod network;
+mod api;
 use slint::{Image, SharedPixelBuffer};
 use window_handler::{WindowHandler, WindowEvents};
-use network::NetworkClient;
+use api::NetworkClient;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
 use std::path::Path;
@@ -14,8 +14,8 @@ use dotenv::dotenv;
 slint::slint!{
     import { Main } from "ui/main.slint";
     import { Login } from "ui/login.slint";
-    import { Store,UserInfo,ChatItem } from "ui/store.slint";
-    export { Main , Login , Store,UserInfo,ChatItem }
+    import { Store,AppGlobal,UserInfo,ChatItem } from "ui/store.slint";
+    export { Main , Login , Store,AppGlobal,UserInfo,ChatItem }
 }   
 
 impl WindowEvents for Main {
@@ -51,7 +51,7 @@ fn main() -> Result<()> {
     println!("[DEBUG] Using server URL: {}", server_url);
     
     let network_client = Arc::new(NetworkClient::new(server_url));
-    let rt = Runtime::new()?;
+    let rt = Arc::new(Runtime::new()?);
     
     // 设置登录按钮点击事件
     let weak_app = app.as_weak();
@@ -73,9 +73,49 @@ fn main() -> Result<()> {
                                 if let Some(app) = weak_app.upgrade() {
                                     println!("[DEBUG] Creating main window...");
                                     let main_window = Main::new().unwrap();
-                                    let weak_main = main_window.as_weak();
+                                    let weak_main1 = main_window.as_weak();
+                                    let weak_main2 = main_window.as_weak();
+                                    let client_clone = client.clone();
+                                    let user_id_clone = user_id;
+                                    weak_main1.upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
+                                        println!("[DEBUG] Chat selected: {}", id);
+                                        let weak_main1 = weak_main1.clone();
+                                        let client_clone = client_clone.clone();
+                                        let user_id_clone = user_id_clone;
+                                        // 使用spawn来避免阻塞UI线程
+                                        std::thread::spawn(move || {
+                                            let rt = Runtime::new().unwrap();
+                                            rt.block_on(async move {
+                                                match client_clone.get_chat_history(id as i64, user_id_clone as i64).await {
+                                                    Ok(messages) => {
+                                                        println!("[DEBUG] Chat history received, count: {}", messages.len());
+                                                        // 创建新的消息列表
+                                                        let mut message_items = slint::VecModel::default();
+                                                        // 添加历史消息
+                                                        for message in messages {
+                                                            let message_item = MessageItem {
+                                                                text: message.content.into(),
+                                                                avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                                                text_type: "text".into(),
+                                                                send_type: if message.sender_id == user_id_clone as i64 { "send".into() } else { "receive".into() },
+                                                                time: message.timestamp.to_string().into(),
+                                                            };
+                                                            message_items.push(message_item);
+                                                        }
+                                                        // 设置消息列表
+                                                        if let Some(window) = weak_main1.upgrade() {
+                                                            window.global::<Store>().set_message_items(slint::ModelRc::new(message_items));
+                                                        }
+                                                    }
+                                                    Err(e) => {
+                                                        println!("Get chat history failed: {}", e);
+                                                    }
+                                                }
+                                            });
+                                        });
+                                    });
                                     println!("[DEBUG] Main window created");
-                                    let main_handler = WindowHandler::new(weak_main.clone());
+                                    let main_handler = WindowHandler::new(weak_main2);
                                     println!("[DEBUG] Initializing main window...");
                                     main_handler.init_window().unwrap();
                                     println!("[DEBUG] Setting up main window events...");

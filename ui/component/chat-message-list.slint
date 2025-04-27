@@ -1,5 +1,6 @@
 import { ChatMessageItem } from "chat-message-item.slint";
 import { ChatItem } from "../store.slint";
+import { AppGlobal } from "../store.slint";
 export component ChatMessageList inherits Rectangle {
     callback process-drag-event(int,PointerEvent,length,length);
     in property <[ChatItem]> chat-list;
@@ -71,6 +72,7 @@ export component ChatMessageList inherits Rectangle {
                     touch := TouchArea {
                         clicked => {
                             root.current-chat = chat;
+                            AppGlobal.chat-selected(chat.id);
                         }
                     }
                 }

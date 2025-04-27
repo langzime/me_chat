@@ -19,6 +19,21 @@ pub struct FriendInfo {
     pub id: i64,
     pub username: String,
 }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MessageResponse {
+    pub  id: i64,
+    pub sender_id: i64,
+    pub receiver_id: Option<i64>,
+    pub group_id: Option<i64>,
+    pub content: String,
+    pub timestamp: i64,
+    pub direction: String,
+    pub username: String,
+    pub file_path: Option<String>,
+    pub file_name: Option<String>,
+    pub file_size: Option<i64>,
+    pub message_type: Option<String>,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ErrorResponse {
@@ -105,4 +120,30 @@ impl NetworkClient {
             Err(anyhow::anyhow!("Server error: {} - {}", error.error.reason, error.error.description))
         }
     }
+
+    pub async fn get_chat_history(&self, chat_id: i64, user_id: i64) -> anyhow::Result<Vec<MessageResponse>> {
+        let token = self.get_token().unwrap_or_default();
+        println!("[DEBUG] Attempting to get chat history with token: {}", token);
+        
+        let response = self.client
+            .get(format!("{}/api/messages/{}", self.base_url,user_id))
+            .header("Authorization", format!("Bearer {}", token))
+            .send()
+            .await?;
+            
+        let status = response.status();
+        println!("[DEBUG] Chat history response status: {}", status);
+        let response_text = response.text().await?;
+        println!("[DEBUG] Chat history response body: {}", response_text);
+        
+        if status.is_success() {
+            let response = serde_json::from_str::<Vec<MessageResponse>>(&response_text)?;
+            println!("[DEBUG] Successfully got {} chat history items", response.len());
+            Ok(response)
+        } else {
+            let error = serde_json::from_str::<ErrorResponse>(&response_text)?;
+            Err(anyhow::anyhow!("Server error: {} - {}", error.error.reason, error.error.description))
+        }
+    }
+
 } 
