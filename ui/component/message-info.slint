@@ -1,15 +1,15 @@
 import { MessageItem } from "../store.slint";
 export component MessageInfo inherits Rectangle{
     in property <MessageItem> message-item;
-    property<color> message-background : message-item.send-type=="me" ? rgb(149,236,105) : rgb(255,255,255);
+    property<color> message-background : message-item.send-type=="send" ? rgb(149,236,105) : rgb(255,255,255);
     Rectangle {
         width: 100%;
         height: 35px;
         if message-item.text-type=="text":  HorizontalLayout {
-            if message-item.send-type=="other":Rectangle {
+            if message-item.send-type=="receive":Rectangle {
                 width: 20px;
             }
-            if message-item.send-type=="other":Rectangle {
+            if message-item.send-type=="receive":Rectangle {
                 width: 50px;
                 height: 35px;
                 Image {
@@ -18,7 +18,7 @@ export component MessageInfo inherits Rectangle{
                     height: 35px;
                 }
             }
-            if message-item.send-type=="other":Path {
+            if message-item.send-type=="receive":Path {
                 width: 8px;
                 height: 35px;
         
@@ -27,7 +27,7 @@ export component MessageInfo inherits Rectangle{
                 // 填充颜色
                 fill:  message-background;
             }
-            if message-item.send-type=="other":Rectangle {
+            if message-item.send-type=="receive":Rectangle {
                 background: message-background;
                 border-radius: 5px;
                 horizontal-stretch: 0;
@@ -43,7 +43,7 @@ export component MessageInfo inherits Rectangle{
                 min-width: 25px;
                 horizontal-stretch: 1;
             }
-            if message-item.send-type=="me":Rectangle {
+            if message-item.send-type=="send":Rectangle {
                 background: message-background;
                 border-radius: 5px;
                 horizontal-stretch: 0;
@@ -55,7 +55,7 @@ export component MessageInfo inherits Rectangle{
                     font-size: 13px;
                 }
             }
-            if message-item.send-type=="me":Path {
+            if message-item.send-type=="send":Path {
                 width: 8px;
                 height: 35px;
         
@@ -64,7 +64,7 @@ export component MessageInfo inherits Rectangle{
                 // 填充颜色
                 fill:  message-background;
             }
-            if message-item.send-type=="me":Rectangle {
+            if message-item.send-type=="send":Rectangle {
                 width: 50px;
                 height: 35px;
                 Image {
@@ -73,7 +73,7 @@ export component MessageInfo inherits Rectangle{
                     height: 35px;
                 }
             }
-            if message-item.send-type=="me":Rectangle {
+            if message-item.send-type=="send":Rectangle {
                 width: 20px;
             }
         }

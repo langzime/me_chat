@@ -2,7 +2,7 @@ use anyhow::Result;
 mod window_handler;
 mod config;
 mod api;
-use slint::{Image, SharedPixelBuffer};
+use slint::{Image, SharedPixelBuffer, Model, VecModel};
 use window_handler::{WindowHandler, WindowEvents};
 use api::NetworkClient;
 use std::sync::Arc;
@@ -73,13 +73,20 @@ fn main() -> Result<()> {
                                 if let Some(app) = weak_app.upgrade() {
                                     println!("[DEBUG] Creating main window...");
                                     let main_window = Main::new().unwrap();
-                                    let weak_main1 = main_window.as_weak();
-                                    let weak_main2 = main_window.as_weak();
+                                    let weak_main = main_window.as_weak();
+                                    let weak_main_for_chat = weak_main.clone();
                                     let client_clone = client.clone();
                                     let user_id_clone = user_id;
-                                    weak_main1.upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
+                                    // 初始化空的消息列表
+                                    if let Some(window) = weak_main.upgrade() {
+                                        println!("[DEBUG] Initializing empty message list");
+                                        let store = window.global::<Store>();
+                                        let message_items = slint::VecModel::default();
+                                        store.set_message_items(slint::ModelRc::new(message_items));
+                                    }
+                                    weak_main_for_chat.upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
                                         println!("[DEBUG] Chat selected: {}", id);
-                                        let weak_main1 = weak_main1.clone();
+                                        let weak_main = weak_main.clone();
                                         let client_clone = client_clone.clone();
                                         let user_id_clone = user_id_clone;
                                         // 使用spawn来避免阻塞UI线程
@@ -90,9 +97,10 @@ fn main() -> Result<()> {
                                                     Ok(messages) => {
                                                         println!("[DEBUG] Chat history received, count: {}", messages.len());
                                                         // 创建新的消息列表
-                                                        let mut message_items = slint::VecModel::default();
+                                                        let message_items = slint::VecModel::default();
                                                         // 添加历史消息
                                                         for message in messages {
+                                                            println!("[DEBUG] Processing message: {}", message.content);
                                                             let message_item = MessageItem {
                                                                 text: message.content.into(),
                                                                 avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
@@ -102,9 +110,13 @@ fn main() -> Result<()> {
                                                             };
                                                             message_items.push(message_item);
                                                         }
+                                                        println!("[DEBUG] Message items created, count: {}", message_items.row_count());
                                                         // 设置消息列表
-                                                        if let Some(window) = weak_main1.upgrade() {
-                                                            window.global::<Store>().set_message_items(slint::ModelRc::new(message_items));
+                                                        if let Some(window) = weak_main.upgrade() {
+                                                            let store = window.global::<Store>();
+                                                            println!("[DEBUG] Setting message items to store");
+                                                            let model = VecModel::from(message_items);
+                                                            store.set_message_items(slint::ModelRc::new(model));
                                                         }
                                                     }
                                                     Err(e) => {
@@ -115,7 +127,7 @@ fn main() -> Result<()> {
                                         });
                                     });
                                     println!("[DEBUG] Main window created");
-                                    let main_handler = WindowHandler::new(weak_main2);
+                                    let main_handler = WindowHandler::new(weak_main_for_chat);
                                     println!("[DEBUG] Initializing main window...");
                                     main_handler.init_window().unwrap();
                                     println!("[DEBUG] Setting up main window events...");

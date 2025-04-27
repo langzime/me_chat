@@ -70,6 +70,14 @@ export component Main inherits BorderlessWindow {
                 }
             }
         }
+        //聊天框
+        Rectangle {
+            background: yellow;
+            Text {
+                text: "消息数量: " + Store.message-items.length;
+                color: red;
+            }
+        }
         home-page :=  Home {
             process-drag-event(type,ev,x,y) => {
                 root.process-drag-event(type, ev, x, y);
