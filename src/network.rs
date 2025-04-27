@@ -90,11 +90,12 @@ impl NetworkClient {
             .send()
             .await?;
             
-        println!("[DEBUG] Friend list response status: {}", response.status());
+        let status = response.status();
+        println!("[DEBUG] Friend list response status: {}", status);
         let response_text = response.text().await?;
         println!("[DEBUG] Friend list response body: {}", response_text);
         
-        if response.status().is_success() {
+        if status.is_success() {
             let response = serde_json::from_str::<Vec<FriendInfo>>(&response_text)?;
             println!("[DEBUG] Successfully got {} friends", response.len());
             Ok(response)
