@@ -11,6 +11,7 @@ pub struct LoginResponse {
     pub success: bool,
     pub message: String,
     pub token: Option<String>,
+    pub user_id: Option<i64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

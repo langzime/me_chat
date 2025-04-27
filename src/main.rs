@@ -7,12 +7,15 @@ use window_handler::{WindowHandler, WindowEvents};
 use network::NetworkClient;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
+use std::path::Path;
+use std::path::PathBuf;
+use dotenv::dotenv;
 
 slint::slint!{
     import { Main } from "ui/main.slint";
     import { Login } from "ui/login.slint";
-    import { Store,ChatItem } from "ui/store.slint";
-    export { Main , Login , Store,ChatItem }
+    import { Store,UserInfo,ChatItem } from "ui/store.slint";
+    export { Main , Login , Store,UserInfo,ChatItem }
 }   
 
 impl WindowEvents for Main {
@@ -30,6 +33,10 @@ impl WindowEvents for Login {
 }
 
 fn main() -> Result<()> {
+    // 加载 .env 文件
+    dotenv().ok();
+    println!("[DEBUG] Loading environment variables...");
+    
     let app = Login::new()?;
     let window_handler = WindowHandler::new(app.as_weak());
     
@@ -37,7 +44,12 @@ fn main() -> Result<()> {
     window_handler.setup_window_events();
     
     // 从环境变量获取服务器地址，如果没有则使用默认值
-    let server_url = std::env::var("SERVER_URL").unwrap_or_else(|_| "http://3ye.co:32000".to_string());
+    let server_url = std::env::var("SERVER_URL").unwrap_or_else(|_| {
+        println!("[DEBUG] SERVER_URL not found in environment variables, using default value");
+        "http://3ye.co:32000".to_string()
+    });
+    println!("[DEBUG] Using server URL: {}", server_url);
+    
     let network_client = Arc::new(NetworkClient::new(server_url));
     let rt = Runtime::new()?;
     
@@ -53,34 +65,63 @@ fn main() -> Result<()> {
             rt.block_on(async {
                 match client.login(username.to_string(), password.to_string()).await {
                     Ok(response) => {
+                        println!("[DEBUG] Login response received: {:?}", response);
                         if response.success {
-                            if let Some(app) = weak_app.upgrade() {
-                                let main_window = Main::new().unwrap();
-                                let main_handler = WindowHandler::new(main_window.as_weak());
-                                main_handler.init_window().unwrap();
-                                main_handler.setup_window_events();
-                                main_window.show().unwrap();
-                                app.window().hide().unwrap();
-                                //查询好友列表
-                                match client.get_friend_list().await {
-                                    Ok(friend_list) => {
-                                        let mut slint_friends = slint::VecModel::default();
-                                        for friend in friend_list {
+                            println!("[DEBUG] Login successful");
+                            if let Some(user_id) = response.user_id {
+                                println!("[DEBUG] User ID found: {}", user_id);
+                                if let Some(app) = weak_app.upgrade() {
+                                    println!("[DEBUG] Creating main window...");
+                                    let main_window = Main::new().unwrap();
+                                    let weak_main = main_window.as_weak();
+                                    println!("[DEBUG] Main window created");
+                                    let main_handler = WindowHandler::new(weak_main.clone());
+                                    println!("[DEBUG] Initializing main window...");
+                                    main_handler.init_window().unwrap();
+                                    println!("[DEBUG] Setting up main window events...");
+                                    main_handler.setup_window_events();
+                                    println!("[DEBUG] Setting user info...");
+                                    main_window.global::<Store>().set_user_info(UserInfo {
+                                        id: user_id as i32,
+                                        name: username.into(),
+                                        avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                        signature: "".into(),
+                                        background: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                        phone: "".into(),
+                                        email: "".into(),
+                                    });
+                                    println!("[DEBUG] Getting friend list...");
+                                    match client.get_friend_list().await {
+                                        Ok(friend_list) => {
+                                            println!("[DEBUG] Friend list received, count: {}", friend_list.len());
+                                            let slint_friends = slint::VecModel::default();
                                             slint_friends.push(ChatItem {
-                                                id: friend.id.to_string().into(),
-                                                name: friend.username.into(),
+                                                id: user_id as i32,
+                                                name: "文件传输助手".into(),
                                                 avatar:Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
                                                 text: "".into(),
                                                 text_type: "text".into(),
                                                 time: "".into(),
                                             });
+                                            for friend in friend_list {
+                                                slint_friends.push(ChatItem {
+                                                    id: friend.id as i32,
+                                                    name: friend.username.into(),
+                                                    avatar:Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                                    text: "".into(),
+                                                    text_type: "text".into(),
+                                                    time: "".into(),
+                                                });
+                                            }
+                                            let model_rc = slint::ModelRc::new(slint_friends);
+                                            main_window.global::<Store>().set_chat_items(model_rc);
                                         }
-                                        let model_rc = slint::ModelRc::new(slint_friends);
-                                        main_window.global::<Store>().set_chat_items(model_rc);
+                                        Err(e) => {
+                                            println!("Get friend list failed: {}", e);
+                                        }
                                     }
-                                    Err(e) => {
-                                        println!("Get friend list failed: {}", e);
-                                    }
+                                    main_window.show().unwrap();
+                                    app.window().hide().unwrap();
                                 }
                             }
                         } else {
