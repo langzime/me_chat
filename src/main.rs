@@ -97,9 +97,8 @@ fn main() -> Result<()> {
                                     let message_items = slint::VecModel::default();
                                     store.set_message_items(slint::ModelRc::new(message_items));
                                 }
-                                
                                 // 设置聊天选择事件
-                                weak_main_for_chat.upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
+                                weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
                                     println!("[调试] 选中聊天: {}", id);
                                     let weak_main = weak_main.clone();
                                     let client_clone = client_clone.clone();
@@ -136,6 +135,10 @@ fn main() -> Result<()> {
                                         }
                                     }
                                 });
+                                // 发送消息
+                                weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
+                                    println!("[调试] 发送消息: {}", message);
+                                }); 
                                 
                                 println!("[调试] 主窗口已创建");
                                 let main_handler = WindowHandler::new(weak_main_for_chat);

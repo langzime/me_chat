@@ -5,6 +5,7 @@ import { DraggableRectangle } from "../component/base/draggable-rectangle.slint"
 export component ChatBox inherits DraggableRectangle{
     in-out property <bool> is-maximized: false;
     in property <[MessageItem]> message-list;
+    in-out property <string> input-text;
     VerticalLayout {
         //标题栏拖拽区域
         Rectangle {
@@ -226,6 +227,7 @@ export component ChatBox inherits DraggableRectangle{
                     Rectangle {
                             height: 45px;
                             TextInput {
+                                text <=> root.input-text;
                                 height: 45px;
                                 font-size: 20px;
                                 wrap: word-wrap;
@@ -243,6 +245,16 @@ export component ChatBox inherits DraggableRectangle{
                                 height: 35px;
                                 background: rgb(233,233,233);
                                 border-radius: 5px;
+
+                                TouchArea {
+                                    clicked => {
+                                        debug("点击发送按钮");
+                                        debug("输入文本: " + root.input-text);
+                                        AppGlobal.send-message(root.input-text);
+                                        root.input-text = "";
+                                    }
+                                }
+
                                 Text {
                                     text: "发送(S)";
                                     color: rgb(7,193,96);
