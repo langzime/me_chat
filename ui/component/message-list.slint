@@ -4,23 +4,9 @@ export component MessageList inherits Rectangle{
     in property <[MessageItem]> message-list;
         VerticalLayout{
             height: 100%;
-            Rectangle {
-                background: yellow;
-                Text {
-                    text: "消息列表长度: " + message-list.length;
-                    color: red;
-                }
-            }
             for message in message-list: MessageInfo {
                 height: 50px;
                 message-item: message;
-                Rectangle {
-                    background: yellow;
-                    Text {
-                        text: "消息: " + message.text;
-                        color: red;
-                    }
-                }
             }
             Rectangle {
                 vertical-stretch: 1;

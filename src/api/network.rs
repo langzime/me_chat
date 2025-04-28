@@ -50,7 +50,7 @@ pub struct ErrorInfo {
 pub struct NetworkClient {
     base_url: String,
     token: std::sync::Mutex<Option<String>>,
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
 }
 
 impl NetworkClient {
@@ -58,21 +58,20 @@ impl NetworkClient {
         Self {
             base_url,
             token: std::sync::Mutex::new(None),
-            client: reqwest::Client::new(),
+            client: reqwest::blocking::Client::new(),
         }
     }
 
-    pub async fn login(&self, username: String, password: String) -> anyhow::Result<LoginResponse> {
+    pub fn login(&self, username: String, password: String) -> anyhow::Result<LoginResponse> {
         println!("[DEBUG] Attempting login for user: {}", &username);
         let request = LoginRequest { username, password };
         
         let response = self.client
             .post(format!("{}/api/login", self.base_url))
             .json(&request)
-            .send()
-            .await?;
+            .send()?;
 
-        let mut response = response.json::<LoginResponse>().await?;
+        let mut response = response.json::<LoginResponse>()?;
         if response.success {
             if let Some(token) = response.token.take() {
                 println!("[DEBUG] Login successful, token received: {}", token);
@@ -90,7 +89,7 @@ impl NetworkClient {
         self.token.lock().unwrap().clone()
     }
 
-    pub async fn get_friend_list(&self) -> anyhow::Result<Vec<FriendInfo>> {
+    pub fn get_friend_list(&self) -> anyhow::Result<Vec<FriendInfo>> {
         let token = self.get_token().unwrap_or_default();
         println!("[DEBUG] Attempting to get friend list with token: {}", token);
         
@@ -103,12 +102,11 @@ impl NetworkClient {
             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36")
             .header("Upgrade-Insecure-Requests", "1")
             .header("Proxy-Connection", "keep-alive")
-            .send()
-            .await?;
+            .send()?;
             
         let status = response.status();
         println!("[DEBUG] Friend list response status: {}", status);
-        let response_text = response.text().await?;
+        let response_text = response.text()?;
         println!("[DEBUG] Friend list response body: {}", response_text);
         
         if status.is_success() {
@@ -121,19 +119,18 @@ impl NetworkClient {
         }
     }
 
-    pub async fn get_chat_history(&self, chat_id: i64, user_id: i64) -> anyhow::Result<Vec<MessageResponse>> {
+    pub fn get_chat_history(&self, chat_id: i64, user_id: i64) -> anyhow::Result<Vec<MessageResponse>> {
         let token = self.get_token().unwrap_or_default();
         println!("[DEBUG] Attempting to get chat history with token: {}", token);
         
         let response = self.client
-            .get(format!("{}/api/messages/{}", self.base_url,user_id))
+            .get(format!("{}/api/messages/{}", self.base_url, chat_id))
             .header("Authorization", format!("Bearer {}", token))
-            .send()
-            .await?;
+            .send()?;
             
         let status = response.status();
         println!("[DEBUG] Chat history response status: {}", status);
-        let response_text = response.text().await?;
+        let response_text = response.text()?;
         println!("[DEBUG] Chat history response body: {}", response_text);
         
         if status.is_success() {
@@ -145,5 +142,4 @@ impl NetworkClient {
             Err(anyhow::anyhow!("Server error: {} - {}", error.error.reason, error.error.description))
         }
     }
-
 } 
