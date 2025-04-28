@@ -1,7 +1,46 @@
+import { AppGlobal } from  "../../store.slint";
 export component DraggableRectangle inherits Rectangle{
-    callback process-drag-event(int,PointerEvent,length,length);
-    callback close-window();
-    callback minimized-window(bool);
-    callback maximized-window(bool);
-    in-out property <bool> is-maximized: false;
+    property <bool> drag-area-pressed: false;
+    property <length> drag-area-down-x: 0;
+    property <length> drag-area-down-y: 0;
+    public function process-drag-event(idx: int, ev: PointerEvent, x: length, y: length) {
+        if(ev.kind == PointerEventKind.down){
+            drag-area-down-x = x;
+            drag-area-down-y = y;
+            drag-area-pressed = true;
+        }
+        if(ev.kind == PointerEventKind.move){
+            if(!drag-area-pressed){
+                return;
+            }
+            //拖动窗口
+            if (idx == 0){
+                AppGlobal.move-window(x - drag-area-down-x, y - drag-area-down-y);
+            }else if (idx == 1){
+                //上边框
+                AppGlobal.move-window(0, y - drag-area-down-y);
+            }else if (idx == 2){
+
+            }else if (idx == 3){
+
+            }else if (idx == 4){
+                //左边框
+                AppGlobal.move-window(x - drag-area-down-x, 0);
+            }else if (idx == 5){
+                //左上角
+                AppGlobal.move-window(x - drag-area-down-x, y - drag-area-down-y);
+            }else if (idx == 6){
+                //右上角
+                AppGlobal.move-window(0, y - drag-area-down-y);
+            }else if (idx == 7){
+                //右下角
+            }else if (idx == 8){
+                //左下角
+                AppGlobal.move-window(x - drag-area-down-x, 0);
+            }
+        }
+        if(ev.kind == PointerEventKind.up || ev.kind == PointerEventKind.up){
+            drag-area-pressed = false;
+        }
+    }
 }   

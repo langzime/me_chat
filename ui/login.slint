@@ -1,6 +1,6 @@
 import { VerticalBox, HorizontalBox, LineEdit, Button } from "std-widgets.slint";
 import { BorderlessWindow } from "component/base/borderless-window.slint";
-import { FriendInfo } from "./store.slint";
+import { FriendInfo,AppGlobal } from "./store.slint";
 
 export component Login inherits BorderlessWindow {
     in-out property <string> username: "";
@@ -11,24 +11,6 @@ export component Login inherits BorderlessWindow {
     width: 400px;
     height: 500px;
     background: #f5f5f5;
-
-    callback close-window();
-    callback minimized-window(bool);
-    callback maximized-window(bool);
-    callback move-window(length, length);
-
-    on-close-window() => {
-        close-window();
-    }
-    on-minimized-window(enable) => {
-        minimized-window(enable);
-    }
-    on-maximized-window(enable) => {
-        maximized-window(enable);
-    }
-    on-move-window(offset-x, offset-y) => {
-        move-window(offset-x, offset-y);
-    }
 
     Rectangle {
         height: 30px;
@@ -52,7 +34,7 @@ export component Login inherits BorderlessWindow {
                 }
                 TouchArea {
                     clicked => {
-                        root.minimized-window(true);
+                        AppGlobal.minimized-window(true);
                     }
                 }
             }
@@ -66,7 +48,7 @@ export component Login inherits BorderlessWindow {
                 }
                 TouchArea {
                     clicked => {
-                        root.maximized-window(!root.is-maximized);
+                        AppGlobal.maximized-window(!root.is-maximized);
                     }
                 }
             }
@@ -80,7 +62,7 @@ export component Login inherits BorderlessWindow {
                 }
                 TouchArea {
                     clicked => {
-                        root.close-window();
+                        AppGlobal.close-window();
                     }
                 }
             }

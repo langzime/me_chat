@@ -1,8 +1,8 @@
 import { ChatMessageItem } from "chat-message-item.slint";
 import { ChatItem } from "../store.slint";
 import { AppGlobal } from "../store.slint";
-export component ChatMessageList inherits Rectangle {
-    callback process-drag-event(int,PointerEvent,length,length);
+import { DraggableRectangle } from "../component/base/draggable-rectangle.slint";
+export component ChatMessageList inherits DraggableRectangle {
     in property <[ChatItem]> chat-list;
     //当前选中的聊天
     in-out property <ChatItem> current-chat;

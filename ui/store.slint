@@ -57,20 +57,20 @@ export global Store {
 
     in-out property <TabIndex> current-tab-index: TabIndex.Chat;//当前选中的tab
     in-out property <[ChatItem]> chat-items;//消息列表
-    in-out property <[MessageItem]> message-items: [
-        {
-            text: "测试消息",
-            avatar: @image-url("assets/avatar.jpg"),
-            text-type: "text",
-            send-type: "send",
-            time: "2024-03-19"
-        }
-    ];//聊天消息列表
+    in-out property <[MessageItem]> message-items;//聊天消息列表
 }
-
+//全局函数
 export global AppGlobal {
     callback chat-selected(int);
+    callback send-message(string);
+    callback close-window();
+    callback minimized-window(bool);
+    callback maximized-window(bool);
+    callback move-window(length, length);
+    callback mouse-down(int, int);
+    callback mouse-move(int, int);
 }
+
 export global Images {
     in-out property <image> tensor: @image-url("assets/tensor.jpg");
 }

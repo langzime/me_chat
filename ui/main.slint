@@ -1,7 +1,7 @@
 import { BorderlessWindow } from "component/base/borderless-window.slint";
 import { SideBar } from "component/base/side-bar.slint";
 import { Home } from "page/home.slint";
-import { TabIndex, Store } from "./store.slint";
+import { TabIndex, Store,AppGlobal } from "./store.slint";
 
 export struct FriendInfo {
     id: int,
@@ -16,37 +16,6 @@ export component Main inherits BorderlessWindow {
     min-width: 700px;
     min-height: 500px;
     
-    // 回调函数
-    callback send-message(string, string);
-    callback select-chat(int, string);
-    callback send-file(string);
-    callback search-chat(string);
-    
-    callback close-window();
-    callback minimized-window(bool);
-    callback maximized-window(bool);
-    callback move-window(length, length);
-    callback mouse-down(int, int);
-    callback mouse-move(int, int);
-
-    // 添加搜索文本属性
-    in-out property <string> search-text: "";
-
-    // 添加好友列表属性
-    in-out property <[FriendInfo]> friend-list: [];
-
-    on-close-window() => {
-        close-window();
-    }
-    on-minimized-window(enable) => {
-        minimized-window(enable);
-    }
-    on-maximized-window(enable) => {
-        maximized-window(enable);
-    }
-    on-move-window(offset-x, offset-y) => {
-        move-window(offset-x, offset-y);
-    }
     HorizontalLayout {
         alignment: stretch;
         //工具栏
@@ -72,18 +41,6 @@ export component Main inherits BorderlessWindow {
         }
         //聊天框
         home-page :=  Home {
-            process-drag-event(type,ev,x,y) => {
-                root.process-drag-event(type, ev, x, y);
-            }
-            minimized-window(enable) => {
-                root.minimized-window(enable);
-            }
-            maximized-window(enable) => {
-                root.maximized-window(enable);
-            }
-            close-window() => {
-                root.close-window();
-            }
         }
     }
 }

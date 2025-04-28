@@ -1,7 +1,9 @@
-import { DraggableRectangle } from "./base/draggable-rectangle.slint";
 import { MessageList } from "message-list.slint";
 import { MessageItem } from "../store.slint";
+import { AppGlobal } from "../store.slint";
+import { DraggableRectangle } from "../component/base/draggable-rectangle.slint";
 export component ChatBox inherits DraggableRectangle{
+    in-out property <bool> is-maximized: false;
     in property <[MessageItem]> message-list;
     VerticalLayout {
         //标题栏拖拽区域
@@ -25,7 +27,7 @@ export component ChatBox inherits DraggableRectangle{
                         background: transparent;
                         touch-minize := TouchArea {
                             clicked => {
-                                root.minimized-window(true)
+                                AppGlobal.minimized-window(true)
                             }
                         }
 
@@ -48,7 +50,7 @@ export component ChatBox inherits DraggableRectangle{
                         touch-maximized := TouchArea {
                             clicked => {
                                 root.is-maximized = !root.is-maximized;
-                                root.maximized-window(root.is-maximized);
+                                AppGlobal.maximized-window(root.is-maximized);
                             }
                         }
 
@@ -71,7 +73,7 @@ export component ChatBox inherits DraggableRectangle{
                         background: transparent;
                         touch-close := TouchArea {
                             clicked => {
-                                root.close-window()
+                                AppGlobal.close-window()
                             }
                         }
 

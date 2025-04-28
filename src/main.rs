@@ -18,17 +18,33 @@ slint::slint!{
 }   
 
 impl WindowEvents for Main {
-    fn on_close_window(&self, callback: impl Fn() + 'static) { self.on_close_window(callback); }
-    fn on_minimized_window(&self, callback: impl Fn(bool) + 'static) { self.on_minimized_window(callback); }
-    fn on_maximized_window(&self, callback: impl Fn(bool) + 'static) { self.on_maximized_window(callback); }
-    fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static) { self.on_move_window(callback); }
+    fn on_close_window(&self, callback: impl Fn() + 'static) { 
+        self.global::<AppGlobal>().on_close_window(callback);
+    }
+    fn on_minimized_window(&self, callback: impl Fn(bool) + 'static) { 
+        self.global::<AppGlobal>().on_minimized_window(callback);
+    }
+    fn on_maximized_window(&self, callback: impl Fn(bool) + 'static) { 
+        self.global::<AppGlobal>().on_maximized_window(callback);
+    }
+    fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static) { 
+        self.global::<AppGlobal>().on_move_window(move |x, y| callback(x as f32, y as f32));
+    }
 }
 
 impl WindowEvents for Login {
-    fn on_close_window(&self, callback: impl Fn() + 'static) { self.on_close_window(callback); }
-    fn on_minimized_window(&self, callback: impl Fn(bool) + 'static) { self.on_minimized_window(callback); }
-    fn on_maximized_window(&self, callback: impl Fn(bool) + 'static) { self.on_maximized_window(callback); }
-    fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static) { self.on_move_window(callback); }
+    fn on_close_window(&self, callback: impl Fn() + 'static) { 
+        self.global::<AppGlobal>().on_close_window(callback);
+    }
+    fn on_minimized_window(&self, callback: impl Fn(bool) + 'static) { 
+        self.global::<AppGlobal>().on_minimized_window(callback);
+    }
+    fn on_maximized_window(&self, callback: impl Fn(bool) + 'static) { 
+        self.global::<AppGlobal>().on_maximized_window(callback);
+    }
+    fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static) { 
+        self.global::<AppGlobal>().on_move_window(move |x, y| callback(x as f32, y as f32));
+    }
 }
 
 fn main() -> Result<()> {
