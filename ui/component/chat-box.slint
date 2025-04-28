@@ -121,9 +121,12 @@ export component ChatBox inherits DraggableRectangle{
             height: 1px;
         }
         //聊天内容
-        MessageList {
-            message-list: root.message-list;
+        Rectangle {
             vertical-stretch: 1;
+            MessageList {
+                message-list: root.message-list;
+                height: 100%;
+            }
         }
         //分割线
         Rectangle {

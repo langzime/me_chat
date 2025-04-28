@@ -2,6 +2,8 @@ import { MessageInfo } from "message-info.slint";
 import { MessageItem } from "../store.slint";
 export component MessageList inherits Rectangle{
     in property <[MessageItem]> message-list;
+    Flickable {
+        height: 100%;
         VerticalLayout{
             height: 100%;
             for message in message-list: MessageInfo {
@@ -12,4 +14,6 @@ export component MessageList inherits Rectangle{
                 vertical-stretch: 1;
             }
         }
+        viewport-y: 0;
+    }
 }
