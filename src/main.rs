@@ -2,13 +2,16 @@ use anyhow::Result;
 mod window_handler;
 mod config;
 mod api;
+mod websocket;
 use slint::{Image, SharedPixelBuffer, Model, VecModel};
 use window_handler::{WindowHandler, WindowEvents};
 use api::NetworkClient;
+use websocket::{WebSocketClient, ChatMessage};
 use std::sync::Arc;
 use std::path::Path;
 use std::path::PathBuf;
 use dotenv::dotenv;
+use tokio::runtime::Runtime;
 
 slint::slint!{
     import { Main } from "ui/main.slint";
@@ -63,9 +66,14 @@ fn main() -> Result<()> {
         println!("[调试] 未在环境变量中找到 SERVER_URL，使用默认值");
         "http://3ye.co:32000".to_string()
     });
+    let socket_url = std::env::var("SOCKET_URL").unwrap_or_else(|_| {
+        println!("[调试] 未在环境变量中找到 SOCKET_URL，使用默认值");
+        "ws://3ye.co:32000/ws".to_string()
+    });
     println!("[调试] 使用服务器地址: {}", server_url);
     
-    let network_client = Arc::new(NetworkClient::new(server_url));
+    let network_client = Arc::new(NetworkClient::new(server_url.clone()));
+    let rt = Arc::new(Runtime::new()?);
     
     // 设置登录按钮点击事件
     let weak_app = app.as_weak();
@@ -74,8 +82,8 @@ fn main() -> Result<()> {
         if let Some(app) = weak_app.upgrade() {
             let username = app.get_username();
             let password = app.get_password();
-            
-            match client.login(username.to_string(), password.to_string()) {
+            let username_clone = username.clone();
+            match client.login(username.clone().to_string(), password.to_string()) {
                 Ok(response) => {
                     println!("[调试] 收到登录响应: {:?}", response);
                     if response.success {
@@ -89,6 +97,12 @@ fn main() -> Result<()> {
                                 let weak_main_for_chat = weak_main.clone();
                                 let client_clone = client.clone();
                                 let user_id_clone = user_id;
+                                let token = response.token.unwrap();
+                                // 初始化WebSocket客户端
+                                let mut ws_client = WebSocketClient::new(socket_url.clone(), token.clone());
+                                if let Err(e) = rt.block_on(ws_client.connect()) {
+                                    println!("[错误] WebSocket连接失败: {}", e);
+                                }
                                 
                                 // 初始化空的消息列表
                                 if let Some(window) = weak_main.upgrade() {
@@ -97,6 +111,7 @@ fn main() -> Result<()> {
                                     let message_items = slint::VecModel::default();
                                     store.set_message_items(slint::ModelRc::new(message_items));
                                 }
+                                
                                 // 设置聊天选择事件
                                 weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
                                     println!("[调试] 选中聊天: {}", id);
@@ -128,6 +143,7 @@ fn main() -> Result<()> {
                                                 println!("[调试] 正在设置消息项到存储");
                                                 let model = VecModel::from(message_items);
                                                 store.set_message_items(slint::ModelRc::new(model));
+                                                store.set_current_chat(id);
                                             }
                                         }
                                         Err(e) => {
@@ -136,9 +152,21 @@ fn main() -> Result<()> {
                                     }
                                 });
                                 // 发送消息
+                                let rt_clone = rt.clone();
                                 weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
                                     println!("[调试] 发送消息: {}", message);
-                                }); 
+                                    let message = ChatMessage {
+                                        username:username.to_string(),
+                                        content: message.to_string(),
+                                        message_type: "text".to_string(),
+                                        sender_id: user_id_clone as i64,
+                                        receiver_id: 0, // TODO: 获取当前选中的聊天ID
+                                        timestamp: chrono::Local::now().timestamp(),
+                                    };
+                                    if let Err(e) = rt_clone.block_on(ws_client.send_message(message)) {
+                                        println!("[错误] 发送消息失败: {}", e);
+                                    }
+                                });
                                 
                                 println!("[调试] 主窗口已创建");
                                 let main_handler = WindowHandler::new(weak_main_for_chat);
@@ -149,7 +177,7 @@ fn main() -> Result<()> {
                                 println!("[调试] 正在设置用户信息...");
                                 main_window.global::<Store>().set_user_info(UserInfo {
                                     id: user_id as i32,
-                                    name: username.into(),
+                                    name: username_clone.into(),
                                     avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
                                     signature: "".into(),
                                     background: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),

@@ -73,7 +73,7 @@ impl NetworkClient {
 
         let mut response = response.json::<LoginResponse>()?;
         if response.success {
-            if let Some(token) = response.token.take() {
+            if let Some(token) = response.token.clone() {
                 println!("[DEBUG] Login successful, token received: {}", token);
                 *self.token.lock().unwrap() = Some(token);
             } else {
