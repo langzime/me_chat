@@ -139,7 +139,7 @@ fn main() -> Result<()> {
                                         match receiver.recv().await {
                                             Ok(message) => {
                                                 println!("[调试] 收到新消息: {:?}", message);
-                                                if let Some(window) = weak_main_for_receive.upgrade() {
+                                                 if let Some(window) = weak_main_for_receive.upgrade() {
                                                     let store = window.global::<Store>();
                                                     let mut message_items = store.get_message_items();
                                                     let message_item = MessageItem {
@@ -152,6 +152,8 @@ fn main() -> Result<()> {
                                                     let mut model = VecModel::default();
                                                     model.push(message_item);
                                                     store.set_message_items(slint::ModelRc::new(model));
+                                                }else {
+                                                    println!("[错误] 窗口已关闭");
                                                 }
                                             }
                                             Err(e) => {
@@ -173,7 +175,7 @@ fn main() -> Result<()> {
                                 // 设置聊天选择事件
                                 weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
                                     println!("[调试] 选中聊天: {}", id);
-                                    let weak_main = weak_main.clone();
+                                    let weak_main_for_chat = weak_main.clone();
                                     let client_clone = client_clone.clone();
                                     let user_id_clone = user_id_clone;
                                     
@@ -196,7 +198,7 @@ fn main() -> Result<()> {
                                             }
                                             println!("[调试] 消息项已创建，数量: {}", message_items.row_count());
                                             // 设置消息列表
-                                            if let Some(window) = weak_main.upgrade() {
+                                            if let Some(window) = weak_main_for_chat.upgrade() {
                                                 let store = window.global::<Store>();
                                                 println!("[调试] 正在设置消息项到存储");
                                                 let model = VecModel::from(message_items);
