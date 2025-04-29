@@ -12,6 +12,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use dotenv::dotenv;
 use tokio::runtime::Runtime;
+use tokio::sync::Mutex;
 
 slint::slint!{
     import { Main } from "ui/main.slint";
@@ -50,6 +51,18 @@ impl WindowEvents for Login {
     }
 }
 
+type WsClient = Arc<Mutex<WebSocketClient>>;
+
+fn create_ws_client(socket_url: String, token: String, rt: &Runtime) -> Result<WsClient> {
+    let mut ws_client = WebSocketClient::new(socket_url, token);
+    rt.block_on(async {
+        if let Err(e) = ws_client.connect().await {
+            println!("[错误] WebSocket连接失败: {}", e);
+        }
+    });
+    Ok(Arc::new(Mutex::new(ws_client)))
+}
+
 fn main() -> Result<()> {
     // 加载 .env 文件
     dotenv().ok();
@@ -68,7 +81,7 @@ fn main() -> Result<()> {
     });
     let socket_url = std::env::var("SOCKET_URL").unwrap_or_else(|_| {
         println!("[调试] 未在环境变量中找到 SOCKET_URL，使用默认值");
-        "ws://3ye.co:32000/ws".to_string()
+        "ws://3ye.co:32000".to_string()
     });
     println!("[调试] 使用服务器地址: {}", server_url);
     
@@ -99,11 +112,55 @@ fn main() -> Result<()> {
                                 let client_clone = client.clone();
                                 let user_id_clone = user_id;
                                 let token = response.token.unwrap();
+                                
                                 // 初始化WebSocket客户端
-                                let mut ws_client = WebSocketClient::new(socket_url.clone(), token.clone());
-                                if let Err(e) = rt.block_on(ws_client.connect()) {
-                                    println!("[错误] WebSocket连接失败: {}", e);
-                                }
+                                let ws_client = match create_ws_client(socket_url.clone(), token.clone(), &rt) {
+                                    Ok(client) => client,
+                                    Err(e) => {
+                                        println!("[错误] 创建WebSocket客户端失败: {}", e);
+                                        return;
+                                    }
+                                };
+                                
+                                // 设置消息接收处理
+                                let weak_main_for_receive = weak_main.clone();
+                                let user_id_clone = user_id;
+                                let ws_client_for_send = ws_client.clone();
+                                
+                                // 获取消息接收器
+                                let mut receiver = {
+                                    let ws_client = rt.block_on(ws_client_for_send.lock());
+                                    ws_client.get_message_receiver()
+                                };
+                                
+                                // 使用 tokio::spawn 处理消息接收
+                                rt.spawn(async move {
+                                    loop {
+                                        match receiver.recv().await {
+                                            Ok(message) => {
+                                                println!("[调试] 收到新消息: {:?}", message);
+                                                if let Some(window) = weak_main_for_receive.upgrade() {
+                                                    let store = window.global::<Store>();
+                                                    let mut message_items = store.get_message_items();
+                                                    let message_item = MessageItem {
+                                                        text: message.content.into(),
+                                                        avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                                        text_type: "text".into(),
+                                                        send_type: if message.sender_id == user_id_clone as i64 { "send".into() } else { "receive".into() },
+                                                        time: message.timestamp.to_string().into(),
+                                                    };
+                                                    let mut model = VecModel::default();
+                                                    model.push(message_item);
+                                                    store.set_message_items(slint::ModelRc::new(model));
+                                                }
+                                            }
+                                            Err(e) => {
+                                                println!("[错误] 接收消息失败: {}", e);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                });
                                 
                                 // 初始化空的消息列表
                                 if let Some(window) = weak_main.upgrade() {
@@ -152,11 +209,12 @@ fn main() -> Result<()> {
                                         }
                                     }
                                 });
+                                
                                 // 发送消息
                                 let rt_clone = rt.clone();
                                 weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
                                     println!("[调试] 发送消息: {}", message);
-
+                                    
                                     //从store获取当前聊天id
                                     if let Some(window) = weak_main_for_chat.clone().upgrade() {
                                         print!("[调试] 获取窗口");
@@ -172,9 +230,15 @@ fn main() -> Result<()> {
                                             target_type: "person".to_string(),
                                             direction: "send".to_string(),
                                         };
-                                        if let Err(e) = rt_clone.block_on(ws_client.send_message(message)) {
-                                            println!("[错误] 发送消息失败: {}", e);
-                                        }
+                                        let ws_client = ws_client_for_send.clone();
+                                        // 使用 tokio::spawn 来处理异步操作
+                                        rt_clone.spawn(async move {
+                                            if let Err(e) = ws_client.lock().await.send_message(message).await {
+                                                println!("[错误] 发送消息失败: {}", e);
+                                            }
+                                        });
+                                    } else {
+                                        println!("[错误] 窗口已关闭");
                                     }
                                 });
                                 
