@@ -3,6 +3,9 @@ import { ChatBox } from "../component/chat-box.slint";
 import { Store,MessageItem,AppGlobal } from "../store.slint";
 export component Home inherits Rectangle{ 
     horizontal-stretch: 1;
+    public function scroll-to-bottom() {
+        chat-box.scroll-to-bottom();
+    }
     HorizontalLayout {
         alignment: stretch;
         //消息列表
@@ -14,7 +17,7 @@ export component Home inherits Rectangle{
             border-color: rgb(214,214,214);
             chat-list: Store.chat-items;
         }
-        ChatBox {
+       chat-box:= ChatBox {
             message-list: Store.message-items;
             border-top-right-radius: 3px;
             border-bottom-right-radius: 3px;

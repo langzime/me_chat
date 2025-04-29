@@ -6,6 +6,9 @@ export component ChatBox inherits DraggableRectangle{
     in-out property <bool> is-maximized: false;
     in property <[MessageItem]> message-list;
     in-out property <string> input-text;
+    public function scroll-to-bottom() {
+        message-list.scroll-to-bottom();
+    }
     VerticalLayout {
         //标题栏拖拽区域
         Rectangle {
@@ -251,7 +254,6 @@ export component ChatBox inherits DraggableRectangle{
                                         debug("点击发送按钮");
                                         debug("输入文本: " + root.input-text);
                                         if root.input-text != "" {
-                                            message-list.scroll-to-bottom();
                                             if AppGlobal.send-message(root.input-text) {
                                                 root.input-text = "";
                                             }

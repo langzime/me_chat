@@ -166,6 +166,7 @@ fn main() -> Result<()> {
                                                 println!("[调试] 消息项已创建，数量: {}", message_items.row_count());
                                                 store.set_message_items(slint::ModelRc::new(message_items));
                                                 store.set_current_chat(id);
+                                                window.invoke_scroll_to_bottom();
                                             }
                                         }
                                         Err(e) => {
@@ -210,7 +211,7 @@ fn main() -> Result<()> {
                                                         };
                                                         message_items.push(message_item);
                                                         store.set_message_items(slint::ModelRc::new(message_items));
-                                                        
+                                                        window.invoke_scroll_to_bottom();
                                                     }
                                                 });
                                             }
@@ -270,6 +271,7 @@ fn main() -> Result<()> {
                                             }
                                             true
                                         });
+                                        window.invoke_scroll_to_bottom();
                                     }
                                     true
                                 });

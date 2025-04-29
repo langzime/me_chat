@@ -4,7 +4,7 @@ export component MessageList inherits Rectangle{
     in property <[MessageItem]> message-list;
     public function scroll-to-bottom() {
         debug("滚动到最底部");
-        flickable.viewport-y =  flickable.height - flickable.viewport-height - 50px;
+        flickable.viewport-y =  flickable.height - flickable.viewport-height;
         debug(flickable.height/1px);
         debug(flickable.viewport-height/1px);
         debug(flickable.viewport-y/1px);

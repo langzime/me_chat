@@ -15,7 +15,9 @@ export component Main inherits BorderlessWindow {
     // 设置窗口大小
     min-width: 700px;
     min-height: 500px;
-    
+    public function scroll-to-bottom() {
+        home-page.scroll-to-bottom();
+    }
     HorizontalLayout {
         alignment: stretch;
         //工具栏
