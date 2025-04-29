@@ -1,6 +1,6 @@
 import { MessageList } from "message-list.slint";
 import { MessageItem } from "../store.slint";
-import { AppGlobal } from "../store.slint";
+import { AppGlobal, Store } from "../store.slint";
 import { DraggableRectangle } from "../component/base/draggable-rectangle.slint";
 export component ChatBox inherits DraggableRectangle{
     in-out property <bool> is-maximized: false;
@@ -250,8 +250,11 @@ export component ChatBox inherits DraggableRectangle{
                                     clicked => {
                                         debug("点击发送按钮");
                                         debug("输入文本: " + root.input-text);
-                                        AppGlobal.send-message(root.input-text);
-                                        root.input-text = "";
+                                        if root.input-text != "" {
+                                            if Store.async-send-message(root.input-text) {
+                                                root.input-text = "";
+                                            }
+                                        }
                                     }
                                 }
 

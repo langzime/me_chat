@@ -56,9 +56,7 @@ type WsClient = Arc<Mutex<WebSocketClient>>;
 fn create_ws_client(socket_url: String, token: String, rt: &Runtime) -> Result<WsClient> {
     let mut ws_client = WebSocketClient::new(socket_url, token);
     rt.block_on(async {
-        if let Err(e) = ws_client.connect().await {
-            println!("[错误] WebSocket连接失败: {}", e);
-        }
+        ws_client.connect().await;
     });
     Ok(Arc::new(Mutex::new(ws_client)))
 }
@@ -107,13 +105,10 @@ fn main() -> Result<()> {
                                 println!("[调试] 正在创建主窗口...");
                                 let main_window = Main::new().unwrap();
                                 let weak_main = main_window.as_weak();
-                                let weak_main_for_chat = weak_main.clone();
-                                let weak_main_for_handler = weak_main_for_chat.clone();
-                                let client_clone = client.clone();
-                                let user_id_clone = user_id;
-                                let token = response.token.unwrap();
+                                let store = main_window.global::<Store>();
                                 
-                                // 初始化WebSocket客户端
+                                // 初始化 WebSocket 客户端
+                                let token = response.token.unwrap();
                                 let ws_client = match create_ws_client(socket_url.clone(), token.clone(), &rt) {
                                     Ok(client) => client,
                                     Err(e) => {
@@ -122,87 +117,62 @@ fn main() -> Result<()> {
                                     }
                                 };
                                 
-                                // 设置消息接收处理
+                                // 克隆所有需要的变量
                                 let weak_main_for_receive = weak_main.clone();
-                                let user_id_clone = user_id;
+                                let weak_main_for_send = weak_main.clone();
+                                let weak_main_for_handler = weak_main.clone();
+                                let weak_main_for_chat = weak_main.clone();
+                                let ws_client_for_receive = ws_client.clone();
                                 let ws_client_for_send = ws_client.clone();
-                                
-                                // 获取消息接收器
-                                let mut receiver = {
-                                    let ws_client = rt.block_on(ws_client_for_send.lock());
-                                    ws_client.get_message_receiver()
-                                };
-                                
-                                // 使用 tokio::spawn 处理消息接收
-                                rt.spawn(async move {
-                                    loop {
-                                        match receiver.recv().await {
-                                            Ok(message) => {
-                                                println!("[调试] 收到新消息: {:?}", message);
-                                                 if let Some(window) = weak_main_for_receive.upgrade() {
-                                                    let store = window.global::<Store>();
-                                                    let mut message_items = store.get_message_items();
-                                                    let message_item = MessageItem {
-                                                        text: message.content.into(),
-                                                        avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
-                                                        text_type: "text".into(),
-                                                        send_type: if message.sender_id == user_id_clone as i64 { "send".into() } else { "receive".into() },
-                                                        time: message.timestamp.to_string().into(),
-                                                    };
-                                                    let mut model = VecModel::default();
-                                                    model.push(message_item);
-                                                    store.set_message_items(slint::ModelRc::new(model));
-                                                }else {
-                                                    println!("[错误] 窗口已关闭");
-                                                }
-                                            }
-                                            Err(e) => {
-                                                println!("[错误] 接收消息失败: {}", e);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                });
+                                let username_for_send = username.clone();
+                                let user_id_for_receive = user_id;
+                                let user_id_for_send = user_id;
+                                let user_id_for_chat = user_id;
+                                let rt_for_send = rt.clone();
+                                let client_for_chat = client.clone();
                                 
                                 // 初始化空的消息列表
-                                if let Some(window) = weak_main.upgrade() {
-                                    println!("[调试] 正在初始化空消息列表");
+                                if let Some(window) = weak_main_for_chat.upgrade() {
+                                    println!("[调试] 正在初始化消息列表");
                                     let store = window.global::<Store>();
-                                    let message_items = slint::VecModel::default();
+                                    let mut message_items = VecModel::default();
                                     store.set_message_items(slint::ModelRc::new(message_items));
                                 }
                                 
                                 // 设置聊天选择事件
                                 weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_chat_selected(move |id| {
                                     println!("[调试] 选中聊天: {}", id);
-                                    let weak_main_for_chat = weak_main.clone();
-                                    let client_clone = client_clone.clone();
-                                    let user_id_clone = user_id_clone;
                                     
-                                    match client_clone.get_chat_history(id as i64, user_id_clone as i64) {
+                                    match client_for_chat.get_chat_history(id as i64, user_id_for_chat as i64) {
                                         Ok(messages) => {
                                             println!("[调试] 收到聊天历史记录，数量: {}", messages.len());
-                                            // 创建新的消息列表
-                                            let message_items = slint::VecModel::default();
-                                            // 添加历史消息
-                                            for message in messages {
-                                                println!("[调试] 正在处理消息: {}", message.content);
-                                                let message_item = MessageItem {
-                                                    text: message.content.into(),
-                                                    avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
-                                                    text_type: "text".into(),
-                                                    send_type: if message.sender_id == user_id_clone as i64 { "send".into() } else { "receive".into() },
-                                                    time: message.timestamp.to_string().into(),
-                                                };
-                                                message_items.push(message_item);
-                                            }
-                                            println!("[调试] 消息项已创建，数量: {}", message_items.row_count());
-                                            // 设置消息列表
+                                            // 获取现有的消息列表
                                             if let Some(window) = weak_main_for_chat.upgrade() {
                                                 let store = window.global::<Store>();
-                                                println!("[调试] 正在设置消息项到存储");
-                                                let model = VecModel::from(message_items);
-                                                store.set_message_items(slint::ModelRc::new(model));
+                                                let existing_items = store.get_message_items();
+                                                let mut message_items = VecModel::default();
+                                                
+                                                // 复制现有消息
+                                                for i in 0..existing_items.row_count() {
+                                                    if let Some(item) = existing_items.row_data(i) {
+                                                        message_items.push(item);
+                                                    }
+                                                }
+                                                
+                                                // 添加历史消息
+                                                for message in messages {
+                                                    println!("[调试] 正在处理消息: {}", message.content);
+                                                    let message_item = MessageItem {
+                                                        text: message.content.into(),
+                                                        avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                                        text_type: "text".into(),
+                                                        send_type: if message.sender_id == user_id_for_chat as i64 { "send".into() } else { "receive".into() },
+                                                        time: message.timestamp.to_string().into(),
+                                                    };
+                                                    message_items.push(message_item);
+                                                }
+                                                println!("[调试] 消息项已创建，数量: {}", message_items.row_count());
+                                                store.set_message_items(slint::ModelRc::new(message_items));
                                                 store.set_current_chat(id);
                                             }
                                         }
@@ -212,35 +182,76 @@ fn main() -> Result<()> {
                                     }
                                 });
                                 
+                                // 设置消息接收处理
+                                let mut receiver = rt.block_on(async {
+                                    ws_client_for_receive.lock().await.get_message_receiver()
+                                });
+                                
+                                // 使用 tokio::spawn 处理消息接收
+                                rt.spawn(async move {
+                                    loop {
+                                        match receiver.recv().await {
+                                            Ok(message) => {
+                                                println!("[调试] 收到新消息: {:?}", message);
+                                                let weak_main_clone = weak_main_for_receive.clone();
+                                                let message_clone = message.clone();
+                                                let _ =slint::invoke_from_event_loop(move || {
+                                                    if let Some(window) = weak_main_clone.upgrade() {
+                                                        let store = window.global::<Store>();
+                                                        let existing_items = store.get_message_items();
+                                                        let mut message_items = VecModel::default();
+                                                        
+                                                        // 复制现有消息
+                                                        for i in 0..existing_items.row_count() {
+                                                            if let Some(item) = existing_items.row_data(i) {
+                                                                message_items.push(item);
+                                                            }
+                                                        }
+                                                        
+                                                        // 添加新消息
+                                                        let message_item = MessageItem {
+                                                            text: message_clone.content.into(),
+                                                            avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                                            text_type: "text".into(),
+                                                            send_type: if message_clone.sender_id == user_id_for_receive as i64 { "send".into() } else { "receive".into() },
+                                                            time: message_clone.timestamp.to_string().into(),
+                                                        };
+                                                        message_items.push(message_item);
+                                                        store.set_message_items(slint::ModelRc::new(message_items));
+                                                    }
+                                                });
+                                            }
+                                            Err(e) => {
+                                                println!("[错误] 接收消息失败: {}", e);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                });
+                                
                                 // 发送消息
-                                let rt_clone = rt.clone();
-                                weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
+                                weak_main_for_send.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
                                     println!("[调试] 发送消息: {}", message);
                                     
-                                    //从store获取当前聊天id
-                                    if let Some(window) = weak_main_for_chat.clone().upgrade() {
-                                        print!("[调试] 获取窗口");
+                                    if let Some(window) = weak_main_for_send.clone().upgrade() {
                                         let store = window.global::<Store>();
                                         let current_id = store.get_current_chat();
                                         let message = ChatMessage {
-                                            username:username.to_string(),
+                                            username: username_for_send.to_string(),
                                             content: message.to_string(),
                                             message_type: "text".to_string(),
-                                            sender_id: user_id_clone as i64,
-                                            receiver_id:current_id as i64,
+                                            sender_id: user_id_for_send as i64,
+                                            receiver_id: current_id as i64,
                                             timestamp: chrono::Local::now().timestamp(),
                                             target_type: "person".to_string(),
                                             direction: "send".to_string(),
                                         };
                                         let ws_client = ws_client_for_send.clone();
-                                        // 使用 tokio::spawn 来处理异步操作
-                                        rt_clone.spawn(async move {
+                                        rt_for_send.spawn(async move {
                                             if let Err(e) = ws_client.lock().await.send_message(message).await {
                                                 println!("[错误] 发送消息失败: {}", e);
                                             }
                                         });
-                                    } else {
-                                        println!("[错误] 窗口已关闭");
                                     }
                                 });
                                 

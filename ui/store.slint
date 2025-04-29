@@ -59,6 +59,11 @@ export global Store {
     in-out property <[ChatItem]> chat-items;//消息列表
     in-out property <[MessageItem]> message-items;//聊天消息列表
     in-out property <int> current-chat;
+    // WebSocket 相关回调
+    callback async-connect(string) -> bool;
+    callback async-send-message(string) -> bool;
+    callback async-receive-message(string);
+    callback on-error(string);
 }
 //全局函数
 export global AppGlobal {
