@@ -21,7 +21,7 @@ pub struct FriendInfo {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageResponse {
-    pub  id: i64,
+    pub id: i64,
     pub sender_id: i64,
     pub receiver_id: Option<i64>,
     pub group_id: Option<i64>,
@@ -65,8 +65,9 @@ impl NetworkClient {
     pub fn login(&self, username: String, password: String) -> anyhow::Result<LoginResponse> {
         println!("[DEBUG] Attempting login for user: {}", &username);
         let request = LoginRequest { username, password };
-        
-        let response = self.client
+
+        let response = self
+            .client
             .post(format!("{}/api/login", self.base_url))
             .json(&request)
             .send()?;
@@ -91,8 +92,11 @@ impl NetworkClient {
 
     pub fn get_friend_list(&self) -> anyhow::Result<Vec<FriendInfo>> {
         let token = self.get_token().unwrap_or_default();
-        println!("[DEBUG] Attempting to get friend list with token: {}", token);
-        
+        println!(
+            "[DEBUG] Attempting to get friend list with token: {}",
+            token
+        );
+
         let response = self.client
             .get(format!("{}/api/friends", self.base_url))
             .header("Authorization", format!("Bearer {}", token))
@@ -103,43 +107,62 @@ impl NetworkClient {
             .header("Upgrade-Insecure-Requests", "1")
             .header("Proxy-Connection", "keep-alive")
             .send()?;
-            
+
         let status = response.status();
         println!("[DEBUG] Friend list response status: {}", status);
         let response_text = response.text()?;
         println!("[DEBUG] Friend list response body: {}", response_text);
-        
+
         if status.is_success() {
             let response = serde_json::from_str::<Vec<FriendInfo>>(&response_text)?;
             println!("[DEBUG] Successfully got {} friends", response.len());
             Ok(response)
         } else {
             let error = serde_json::from_str::<ErrorResponse>(&response_text)?;
-            Err(anyhow::anyhow!("Server error: {} - {}", error.error.reason, error.error.description))
+            Err(anyhow::anyhow!(
+                "Server error: {} - {}",
+                error.error.reason,
+                error.error.description
+            ))
         }
     }
 
-    pub fn get_chat_history(&self, chat_id: i64, user_id: i64) -> anyhow::Result<Vec<MessageResponse>> {
+    pub fn get_chat_history(
+        &self,
+        chat_id: i64,
+        user_id: i64,
+    ) -> anyhow::Result<Vec<MessageResponse>> {
         let token = self.get_token().unwrap_or_default();
-        println!("[DEBUG] Attempting to get chat history with token: {}", token);
-        
-        let response = self.client
+        println!(
+            "[DEBUG] Attempting to get chat history with token: {}",
+            token
+        );
+
+        let response = self
+            .client
             .get(format!("{}/api/messages/{}", self.base_url, chat_id))
             .header("Authorization", format!("Bearer {}", token))
             .send()?;
-            
+
         let status = response.status();
         println!("[DEBUG] Chat history response status: {}", status);
         let response_text = response.text()?;
         println!("[DEBUG] Chat history response body: {}", response_text);
-        
+
         if status.is_success() {
             let response = serde_json::from_str::<Vec<MessageResponse>>(&response_text)?;
-            println!("[DEBUG] Successfully got {} chat history items", response.len());
+            println!(
+                "[DEBUG] Successfully got {} chat history items",
+                response.len()
+            );
             Ok(response)
         } else {
             let error = serde_json::from_str::<ErrorResponse>(&response_text)?;
-            Err(anyhow::anyhow!("Server error: {} - {}", error.error.reason, error.error.description))
+            Err(anyhow::anyhow!(
+                "Server error: {} - {}",
+                error.error.reason,
+                error.error.description
+            ))
         }
     }
-} 
+}

@@ -14,4 +14,4 @@ impl Default for WindowConfig {
             min_height: 500.0,
         }
     }
-} 
+}
