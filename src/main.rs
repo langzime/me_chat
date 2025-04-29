@@ -149,16 +149,7 @@ fn main() -> Result<()> {
                                             // 获取现有的消息列表
                                             if let Some(window) = weak_main_for_chat.upgrade() {
                                                 let store = window.global::<Store>();
-                                                let existing_items = store.get_message_items();
                                                 let mut message_items = VecModel::default();
-                                                
-                                                // 复制现有消息
-                                                for i in 0..existing_items.row_count() {
-                                                    if let Some(item) = existing_items.row_data(i) {
-                                                        message_items.push(item);
-                                                    }
-                                                }
-                                                
                                                 // 添加历史消息
                                                 for message in messages {
                                                     println!("[调试] 正在处理消息: {}", message.content);
