@@ -72,7 +72,7 @@ impl NetworkClient {
             .json(&request)
             .send()?;
 
-        let mut response = response.json::<LoginResponse>()?;
+        let response = response.json::<LoginResponse>()?;
         if response.success {
             if let Some(token) = response.token.clone() {
                 println!("[DEBUG] Login successful, token received: {}", token);
@@ -137,7 +137,7 @@ impl NetworkClient {
             "[DEBUG] Attempting to get chat history with token: {}",
             token
         );
-
+        println!("[DEBUG] Chat ID: {}, User ID: {}", chat_id, user_id);
         let response = self
             .client
             .get(format!("{}/api/messages/{}", self.base_url, chat_id))

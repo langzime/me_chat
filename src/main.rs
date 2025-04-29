@@ -6,8 +6,6 @@ mod window_handler;
 use api::NetworkClient;
 use dotenv::dotenv;
 use slint::{ComponentHandle, Image, Model, SharedPixelBuffer, VecModel};
-use std::path::Path;
-use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::runtime::Runtime;
 use tokio::sync::Mutex;
@@ -33,8 +31,7 @@ impl WindowEvents for Main {
         self.global::<AppGlobal>().on_maximized_window(callback);
     }
     fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static) {
-        self.global::<AppGlobal>()
-            .on_move_window(move |x, y| callback(x as f32, y as f32));
+        self.global::<AppGlobal>().on_move_window(callback);
     }
 }
 
@@ -49,8 +46,7 @@ impl WindowEvents for Login {
         self.global::<AppGlobal>().on_maximized_window(callback);
     }
     fn on_move_window(&self, callback: impl Fn(f32, f32) + 'static) {
-        self.global::<AppGlobal>()
-            .on_move_window(move |x, y| callback(x as f32, y as f32));
+        self.global::<AppGlobal>().on_move_window(callback);
     }
 }
 
@@ -59,7 +55,7 @@ type WsClient = Arc<Mutex<WebSocketClient>>;
 fn create_ws_client(socket_url: String, token: String, rt: &Runtime) -> Result<WsClient> {
     let mut ws_client = WebSocketClient::new(socket_url, token);
     rt.block_on(async {
-        ws_client.connect().await;
+        let _ = ws_client.connect().await;
     });
     Ok(Arc::new(Mutex::new(ws_client)))
 }
@@ -108,8 +104,6 @@ fn main() -> Result<()> {
                                 println!("[调试] 正在创建主窗口...");
                                 let main_window = Main::new().unwrap();
                                 let weak_main = main_window.as_weak();
-                                let store = main_window.global::<Store>();
-
                                 // 初始化 WebSocket 客户端
                                 let token = response.token.unwrap();
                                 let ws_client = match create_ws_client(
@@ -142,7 +136,7 @@ fn main() -> Result<()> {
                                 if let Some(window) = weak_main_for_chat.upgrade() {
                                     println!("[调试] 正在初始化消息列表");
                                     let store = window.global::<Store>();
-                                    let mut message_items = VecModel::default();
+                                    let message_items = VecModel::default();
                                     store.set_message_items(slint::ModelRc::new(message_items));
                                 }
 
@@ -156,7 +150,7 @@ fn main() -> Result<()> {
                                         println!("[调试] 选中聊天: {}", id);
 
                                         match client_for_chat
-                                            .get_chat_history(id as i64, user_id_for_chat as i64)
+                                            .get_chat_history(id as i64, user_id_for_chat)
                                         {
                                             Ok(messages) => {
                                                 println!(
@@ -166,7 +160,7 @@ fn main() -> Result<()> {
                                                 // 获取现有的消息列表
                                                 if let Some(window) = weak_main_for_chat.upgrade() {
                                                     let store = window.global::<Store>();
-                                                    let mut message_items = VecModel::default();
+                                                    let message_items = VecModel::default();
                                                     // 添加历史消息
                                                     for message in messages {
                                                         println!(
@@ -180,7 +174,7 @@ fn main() -> Result<()> {
                                                             ),
                                                             text_type: "text".into(),
                                                             send_type: if message.sender_id
-                                                                == user_id_for_chat as i64
+                                                                == user_id_for_chat
                                                             {
                                                                 "send".into()
                                                             } else {
@@ -229,7 +223,7 @@ fn main() -> Result<()> {
                                                         let store = window.global::<Store>();
                                                         let existing_items =
                                                             store.get_message_items();
-                                                        let mut message_items = VecModel::default();
+                                                        let message_items = VecModel::default();
 
                                                         // 复制现有消息
                                                         for i in 0..existing_items.row_count() {
@@ -248,7 +242,7 @@ fn main() -> Result<()> {
                                                             ),
                                                             text_type: "text".into(),
                                                             send_type: if message_clone.sender_id
-                                                                == user_id_for_receive as i64
+                                                                == user_id_for_receive
                                                             {
                                                                 "send".into()
                                                             } else {
@@ -287,7 +281,7 @@ fn main() -> Result<()> {
                                         if let Some(window) = weak_main_for_send.upgrade() {
                                             let store = window.global::<Store>();
                                             let existing_items = store.get_message_items();
-                                            let mut message_items = VecModel::default();
+                                            let message_items = VecModel::default();
 
                                             // 复制现有消息
                                             for i in 0..existing_items.row_count() {
@@ -299,7 +293,7 @@ fn main() -> Result<()> {
                                             let message_clone = message.clone();
                                             // 添加新消息
                                             let message_item = MessageItem {
-                                                text: message.into(),
+                                                text: message,
                                                 avatar: Image::from_rgb8(SharedPixelBuffer::new(
                                                     640, 480,
                                                 )),
@@ -320,7 +314,7 @@ fn main() -> Result<()> {
                                                 username: username_for_send.to_string(),
                                                 content: message_clone.to_string(),
                                                 message_type: "text".to_string(),
-                                                sender_id: user_id_for_send as i64,
+                                                sender_id: user_id_for_send,
                                                 receiver_id: current_id as i64,
                                                 timestamp: chrono::Local::now().timestamp(),
                                                 target_type: "person".to_string(),
@@ -353,7 +347,7 @@ fn main() -> Result<()> {
                                 println!("[调试] 正在设置用户信息...");
                                 main_window.global::<Store>().set_user_info(UserInfo {
                                     id: user_id as i32,
-                                    name: username_clone.into(),
+                                    name: username_clone,
                                     avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
                                     signature: "".into(),
                                     background: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),

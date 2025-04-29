@@ -1,9 +1,8 @@
 use anyhow::Result;
-use base64;
+use base64::engine::general_purpose::STANDARD;
+use base64::Engine as _;
 use futures_util::stream::SplitSink;
-use futures_util::stream::SplitStream;
 use futures_util::{SinkExt, StreamExt};
-use rand;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -19,7 +18,6 @@ use url::Url;
 
 type WsStream = WebSocketStream<tokio_tungstenite::MaybeTlsStream<TcpStream>>;
 type WsWrite = SplitSink<WsStream, Message>;
-type WsRead = SplitStream<WsStream>;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ChatMessage {
@@ -40,7 +38,6 @@ pub struct WebSocketClient {
     message_tx: broadcast::Sender<ChatMessage>,
     handle: Option<JoinHandle<()>>,
     write: Arc<Mutex<Option<WsWrite>>>,
-    read: Arc<Mutex<Option<WsRead>>>,
 }
 
 impl WebSocketClient {
@@ -53,7 +50,6 @@ impl WebSocketClient {
             message_tx,
             handle: None,
             write: Arc::new(Mutex::new(None)),
-            read: Arc::new(Mutex::new(None)),
         }
     }
 
@@ -83,7 +79,7 @@ impl WebSocketClient {
                 .header("Sec-WebSocket-Version", "13")
                 .header(
                     "Sec-WebSocket-Key",
-                    base64::encode(rand::random::<[u8; 16]>()),
+                    STANDARD.encode(rand::random::<[u8; 16]>()),
                 )
                 .body(())?;
 
@@ -146,16 +142,15 @@ impl WebSocketClient {
         Err(anyhow::anyhow!("WebSocket连接失败，已重试3次"))
     }
 
-    pub async fn disconnect(&mut self) {
-        println!("[调试] 正在断开WebSocket连接");
-        if let Some(handle) = self.handle.take() {
-            handle.abort();
-        }
-        self.is_connected.store(false, Ordering::SeqCst);
-        *self.write.lock().await = None;
-        *self.read.lock().await = None;
-        println!("[调试] WebSocket连接已断开");
-    }
+    // pub async fn disconnect(&mut self) {
+    //     println!("[调试] 正在断开WebSocket连接");
+    //     if let Some(handle) = self.handle.take() {
+    //         handle.abort();
+    //     }
+    //     self.is_connected.store(false, Ordering::SeqCst);
+    //     *self.write.lock().await = None;
+    //     println!("[调试] WebSocket连接已断开");
+    // }
 
     pub async fn send_message(&self, message: ChatMessage) -> Result<()> {
         if !self.is_connected() {
