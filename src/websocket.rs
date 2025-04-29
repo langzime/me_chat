@@ -26,6 +26,8 @@ pub struct ChatMessage {
     pub sender_id: i64,
     pub receiver_id: i64,
     pub timestamp: i64,
+    pub target_type: String,
+    pub direction: String,
 }
 
 pub struct WebSocketClient {

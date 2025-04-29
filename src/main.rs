@@ -95,6 +95,7 @@ fn main() -> Result<()> {
                                 let main_window = Main::new().unwrap();
                                 let weak_main = main_window.as_weak();
                                 let weak_main_for_chat = weak_main.clone();
+                                let weak_main_for_handler = weak_main_for_chat.clone();
                                 let client_clone = client.clone();
                                 let user_id_clone = user_id;
                                 let token = response.token.unwrap();
@@ -155,21 +156,30 @@ fn main() -> Result<()> {
                                 let rt_clone = rt.clone();
                                 weak_main_for_chat.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
                                     println!("[调试] 发送消息: {}", message);
-                                    let message = ChatMessage {
-                                        username:username.to_string(),
-                                        content: message.to_string(),
-                                        message_type: "text".to_string(),
-                                        sender_id: user_id_clone as i64,
-                                        receiver_id: 0, // TODO: 获取当前选中的聊天ID
-                                        timestamp: chrono::Local::now().timestamp(),
-                                    };
-                                    if let Err(e) = rt_clone.block_on(ws_client.send_message(message)) {
-                                        println!("[错误] 发送消息失败: {}", e);
+
+                                    //从store获取当前聊天id
+                                    if let Some(window) = weak_main_for_chat.clone().upgrade() {
+                                        print!("[调试] 获取窗口");
+                                        let store = window.global::<Store>();
+                                        let current_id = store.get_current_chat();
+                                        let message = ChatMessage {
+                                            username:username.to_string(),
+                                            content: message.to_string(),
+                                            message_type: "text".to_string(),
+                                            sender_id: user_id_clone as i64,
+                                            receiver_id:current_id as i64,
+                                            timestamp: chrono::Local::now().timestamp(),
+                                            target_type: "person".to_string(),
+                                            direction: "send".to_string(),
+                                        };
+                                        if let Err(e) = rt_clone.block_on(ws_client.send_message(message)) {
+                                            println!("[错误] 发送消息失败: {}", e);
+                                        }
                                     }
                                 });
                                 
                                 println!("[调试] 主窗口已创建");
-                                let main_handler = WindowHandler::new(weak_main_for_chat);
+                                let main_handler = WindowHandler::new(weak_main_for_handler);
                                 println!("[调试] 正在初始化主窗口...");
                                 main_handler.init_window().unwrap();
                                 println!("[调试] 正在设置主窗口事件...");
