@@ -126,7 +126,7 @@ export component ChatBox inherits DraggableRectangle{
         //聊天内容
         Rectangle {
             vertical-stretch: 1;
-            MessageList {
+           message-list := MessageList {
                 message-list: root.message-list;
                 height: 100%;
             }
@@ -251,7 +251,8 @@ export component ChatBox inherits DraggableRectangle{
                                         debug("点击发送按钮");
                                         debug("输入文本: " + root.input-text);
                                         if root.input-text != "" {
-                                            if Store.async-send-message(root.input-text) {
+                                            message-list.scroll-to-bottom();
+                                            if AppGlobal.send-message(root.input-text) {
                                                 root.input-text = "";
                                             }
                                         }

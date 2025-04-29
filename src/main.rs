@@ -3,7 +3,7 @@ mod window_handler;
 mod config;
 mod api;
 mod websocket;
-use slint::{Image, SharedPixelBuffer, Model, VecModel};
+use slint::{Image, SharedPixelBuffer, Model, VecModel, ComponentHandle};
 use window_handler::{WindowHandler, WindowEvents};
 use api::NetworkClient;
 use websocket::{WebSocketClient, ChatMessage};
@@ -18,6 +18,7 @@ slint::slint!{
     import { Main } from "ui/main.slint";
     import { Login } from "ui/login.slint";
     import { Store,AppGlobal,UserInfo,ChatItem } from "ui/store.slint";
+    import { MessageList } from "ui/component/message-list.slint";
     export { Main , Login , Store,AppGlobal,UserInfo,ChatItem }
 }   
 
@@ -209,6 +210,7 @@ fn main() -> Result<()> {
                                                         };
                                                         message_items.push(message_item);
                                                         store.set_message_items(slint::ModelRc::new(message_items));
+                                                        
                                                     }
                                                 });
                                             }
@@ -220,16 +222,39 @@ fn main() -> Result<()> {
                                     }
                                 });
                                 
+                                
                                 // 发送消息
                                 weak_main_for_send.clone().upgrade().unwrap().global::<AppGlobal>().on_send_message(move |message| {
                                     println!("[调试] 发送消息: {}", message);
                                     
-                                    if let Some(window) = weak_main_for_send.clone().upgrade() {
+                                    if let Some(window) = weak_main_for_send.upgrade() {
                                         let store = window.global::<Store>();
+                                        let existing_items = store.get_message_items();
+                                        let mut message_items = VecModel::default();
+                                        
+                                        // 复制现有消息
+                                        for i in 0..existing_items.row_count() {
+                                            if let Some(item) = existing_items.row_data(i) {
+                                                message_items.push(item);
+                                            }
+                                        }
+                                        
+                                        let message_clone = message.clone();
+                                        // 添加新消息
+                                        let message_item = MessageItem {
+                                            text: message.into(),
+                                            avatar: Image::from_rgb8(SharedPixelBuffer::new(640, 480)),
+                                            text_type: "text".into(),
+                                            send_type: "send".into(),
+                                            time: chrono::Local::now().timestamp().to_string().into(),
+                                        };
+                                        message_items.push(message_item);
+                                        store.set_message_items(slint::ModelRc::new(message_items));
+                                                                              
                                         let current_id = store.get_current_chat();
-                                        let message = ChatMessage {
+                                        let chat_message = ChatMessage {
                                             username: username_for_send.to_string(),
-                                            content: message.to_string(),
+                                            content: message_clone.to_string(),
                                             message_type: "text".to_string(),
                                             sender_id: user_id_for_send as i64,
                                             receiver_id: current_id as i64,
@@ -239,11 +264,14 @@ fn main() -> Result<()> {
                                         };
                                         let ws_client = ws_client_for_send.clone();
                                         rt_for_send.spawn(async move {
-                                            if let Err(e) = ws_client.lock().await.send_message(message).await {
+                                            if let Err(e) = ws_client.lock().await.send_message(chat_message).await {
                                                 println!("[错误] 发送消息失败: {}", e);
+                                                return false;
                                             }
+                                            true
                                         });
                                     }
+                                    true
                                 });
                                 
                                 println!("[调试] 主窗口已创建");
