@@ -14,7 +14,6 @@ export component Login inherits BorderlessWindow {
 
     Rectangle {
         height: 30px;
-        background: transparent;
         TouchArea {
             pointer-event(ev) => {
                 root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
@@ -27,7 +26,6 @@ export component Login inherits BorderlessWindow {
             Rectangle {
                 width: 20px;
                 height: 20px;
-                background: transparent;
                 Text {
                     text: "-";
                     color: gray;
@@ -55,7 +53,6 @@ export component Login inherits BorderlessWindow {
             Rectangle {
                 width: 20px;
                 height: 20px;
-                background: transparent;
                 Text {
                     text: "×";
                     color: gray;
@@ -84,6 +81,7 @@ export component Login inherits BorderlessWindow {
                 text: "登录";
                 font-size: 24px;
                 horizontal-alignment: center;
+                color: gray;
             }
 
             VerticalBox {
@@ -92,6 +90,7 @@ export component Login inherits BorderlessWindow {
                 Text {
                     text: "用户名";
                     font-size: 14px;
+                    color: gray;
                 }
 
                 LineEdit {
@@ -103,6 +102,7 @@ export component Login inherits BorderlessWindow {
                 Text {
                     text: "密码";
                     font-size: 14px;
+                    color: gray;
                 }
 
                 LineEdit {
@@ -113,9 +113,15 @@ export component Login inherits BorderlessWindow {
                 }
             }
 
-            Button {
-                text: "登录";
-                clicked => { root.login(); }
+            Rectangle {
+                background: #007bff;
+                TouchArea {
+                    clicked => { root.login(); }
+                }
+                Text {
+                    text: "登录";
+                    color: white;
+                }
                 padding: 12px;
             }
 
@@ -123,6 +129,7 @@ export component Login inherits BorderlessWindow {
                 text: "还没有账号？注册";
                 font-size: 14px;
                 horizontal-alignment: center;
+                color: gray;
             }
         }
     }

@@ -36,7 +36,7 @@ export component ChatBox inherits DraggableRectangle{
                         }
 
                         Text {
-                            color: rgba(79,79,79,0.8);
+                            color: rgb(79,79,79);
                             text: "-";
                             font-size: 24px;
                         }
@@ -59,7 +59,7 @@ export component ChatBox inherits DraggableRectangle{
                         }
 
                         Text {
-                            color: rgba(79,79,79,0.8);
+                            color: rgb(79,79,79);
                             text: root.is-maximized ? "❐" : "□";
                             font-size: 24px;
                         }
@@ -82,7 +82,7 @@ export component ChatBox inherits DraggableRectangle{
                         }
 
                         Text {
-                            color: rgba(79,79,79,0.8);
+                            color: rgb(79,79,79);
                             text: "×";
                             font-size: 24px;
                         }
@@ -113,6 +113,7 @@ export component ChatBox inherits DraggableRectangle{
                         y: 0px;
                         text: "文件传输助手";
                         font-size: 18px;
+                        color:black;
                     }
                 }
                 //三个点
@@ -234,6 +235,7 @@ export component ChatBox inherits DraggableRectangle{
                                 height: 45px;
                                 font-size: 20px;
                                 wrap: word-wrap;
+                                color: black;
                             }
                     }
                 }
@@ -262,8 +264,8 @@ export component ChatBox inherits DraggableRectangle{
                                 }
 
                                 Text {
-                                    text: "发送(S)";
                                     color: rgb(7,193,96);
+                                    text: "发送(S)";
                                 }
                             }
                         }
