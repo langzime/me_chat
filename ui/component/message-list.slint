@@ -16,7 +16,7 @@ export component MessageList inherits Rectangle{
          vertical-layout := VerticalLayout{
             height: 100%;
             for message in message-list: MessageInfo {
-                height: 50px;
+//                height: self.height;
                 message-item: message;
             }
             Rectangle {
