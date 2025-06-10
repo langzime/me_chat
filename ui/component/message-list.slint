@@ -1,5 +1,6 @@
 import { MessageInfo } from "message-info.slint";
 import { MessageItem } from "../store.slint";
+
 export component MessageList inherits Rectangle{
     in property <[MessageItem]> message-list;
     public function scroll-to-bottom() {
@@ -12,11 +13,9 @@ export component MessageList inherits Rectangle{
     }
     
     flickable := Flickable {
-        height: 100%;
          vertical-layout := VerticalLayout{
-            height: 100%;
+            spacing: 5px;
             for message in message-list: MessageInfo {
-//                height: self.height;
                 message-item: message;
             }
             Rectangle {

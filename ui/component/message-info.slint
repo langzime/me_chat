@@ -2,12 +2,17 @@ import { MessageItem } from "../store.slint";
 export component MessageInfo inherits Rectangle{
     in property <MessageItem> message-item;
     property<color> message-background : message-item.send-type=="send" ? rgb(149,236,105) : rgb(255,255,255);
+    // background: yellowgreen;
     Rectangle {
         width: 100%;
         min-height: 50px;
         VerticalLayout {
-            padding-left: 10px;
-            padding-bottom: 10px;
+            // padding-top: 5px;
+            // padding-left: 10px;
+            // padding-bottom: 5px;
+            // vertical-stretch: 1;
+            //  spacing: 10px;
+            // alignment: space-around;
             if message-item.text-type=="text":  HorizontalLayout {
                 if message-item.send-type=="receive":Rectangle {
                     width: 20px;
