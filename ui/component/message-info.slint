@@ -2,10 +2,10 @@ import { MessageItem } from "../store.slint";
 export component MessageInfo inherits Rectangle{
     in property <MessageItem> message-item;
     property<color> message-background : message-item.send-type=="send" ? rgb(149,236,105) : rgb(255,255,255);
-    background: yellowgreen;
+    // background: yellowgreen;
     Rectangle {
         width: 100%;
-        min-height: 50px;
+        min-height: 35px;
         VerticalLayout {
             // padding-top: 5px;
             // padding-left: 10px;
@@ -36,11 +36,12 @@ export component MessageInfo inherits Rectangle{
                     fill:  message-background;
                 }
                 if message-item.send-type=="receive":Rectangle {
-                    background: message-background;
+                    // background: message-background;
                     border-radius: 5px;
-                    horizontal-stretch: 0;
-                    width: text.width + 20px;
+                    horizontal-stretch: 1;
+                    width: 60%;
                     height: text.height + 20px;
+                    background: yellow;
                     text:= Text {
                         x: 10px;
                         y: 10px;
@@ -48,7 +49,11 @@ export component MessageInfo inherits Rectangle{
                         font-size: 13px;
                         color: black;
                         wrap: word-wrap;
-                        width: 160px;
+                        // width: 70%;
+                        // width: root.width - 58px;
+                        // height: 100%;
+                        width: parent.width - 10px;
+                        // horizontal-alignment: left;
                     }
                 }
                 Rectangle {
@@ -56,11 +61,12 @@ export component MessageInfo inherits Rectangle{
                     horizontal-stretch: 1;
                 }
                 if message-item.send-type=="send":Rectangle {
-                    background: message-background;
+                    // background: message-background;
                     border-radius: 5px;
-                    horizontal-stretch: 0;
-                    width: text-me.width + 20px;
+                    horizontal-stretch: 1;
+                    width: 60%;
                     height: text-me.height + 20px;
+                    background: lightskyblue;
                     text-me:= Text {
                         x: 10px;
                         y: 10px;
@@ -68,7 +74,10 @@ export component MessageInfo inherits Rectangle{
                         font-size: 13px;
                         color: black;
                         wrap: word-wrap;
-                        width: 160px;
+                        // width: root.width - 200px;
+                        // height: 100%;
+                        width: parent.width - 10px;
+                        // horizontal-alignment: right;
                     }
                 }
                 if message-item.send-type=="send":Path {
