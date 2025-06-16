@@ -19,4 +19,4 @@ rand = "0.8"
 base64 = "0.21"
 
 [build-dependencies]
-slint-build = "1.8"
+slint-build = "1.11"

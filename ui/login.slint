@@ -10,126 +10,157 @@ export component Login inherits BorderlessWindow {
 
     width: 400px;
     height: 500px;
-    background: #f5f5f5;
-
-    Rectangle {
-        height: 30px;
-        TouchArea {
-            pointer-event(ev) => {
-                root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
-            }
-        }
-        HorizontalLayout {
-            alignment: end;
-            spacing: 5px;
-            padding-right: 5px;
-            Rectangle {
-                width: 20px;
-                height: 20px;
-                Text {
-                    text: "-";
-                    color: gray;
-                }
-                TouchArea {
-                    clicked => {
-                        AppGlobal.minimized-window(true);
-                    }
-                }
-            }
-            Rectangle {
-                width: 20px;
-                height: 20px;
-                background: transparent;
-                Text {
-                    text: root.is-maximized ? "❐" : "□";
-                    color: gray;
-                }
-                TouchArea {
-                    clicked => {
-                        AppGlobal.maximized-window(!root.is-maximized);
-                    }
-                }
-            }
-            Rectangle {
-                width: 20px;
-                height: 20px;
-                Text {
-                    text: "×";
-                    color: gray;
-                }
-                TouchArea {
-                    clicked => {
-                        AppGlobal.close-window();
-                    }
-                }
-            }
-        }
-    }
-
     Rectangle {
         background: white;
-        width: 300px;
-        height: 400px;
-        x: 50px;
-        y: 50px;
-
-        VerticalBox {
-            spacing: 20px;
-            padding: 20px;
-
-            Text {
-                text: "登录";
-                font-size: 24px;
-                horizontal-alignment: center;
-                color: gray;
+        border-radius: 5px;
+        Rectangle {
+            x:0;
+            y:0;
+            height: 30px;
+            TouchArea {
+                pointer-event(ev) => {
+                    root.process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                }
             }
+            HorizontalLayout {
+                alignment: end;
+                spacing: 5px;
+                padding-right: 5px;
+                Rectangle {
+                    Rectangle {
+                        border-radius: 3px;
+                        width: 24px;
+                        height: 24px;
+                        background: transparent;
+                        touch-minize := TouchArea {
+                            clicked => {
+                                AppGlobal.minimized-window(true)
+                            }
+                        }
+
+                        Text {
+                            color: rgb(79,79,79);
+                            text: "-";
+                            font-size: 24px;
+                        }
+                    }
+
+                    width: 30px;
+                }
+                //最大化按钮
+                Rectangle {
+                    Rectangle {
+                        border-radius: 3px;
+                        width: 24px;
+                        height: 24px;
+                        background: transparent;
+                        touch-maximized := TouchArea {
+                            clicked => {
+                                root.is-maximized = !root.is-maximized;
+                                AppGlobal.maximized-window(root.is-maximized);
+                            }
+                        }
+
+                        Text {
+                            color: rgb(79,79,79);
+                            text: root.is-maximized ? "❐" : "□";
+                            font-size: 24px;
+                        }
+                    }
+
+                    width: 30px;
+                }
+                //关闭按钮
+                Rectangle {
+                    Rectangle {
+                        border-radius: 3px;
+                        y: 5px;
+                        width: 24px;
+                        height: 24px;
+                        background: transparent;
+                        touch-close := TouchArea {
+                            clicked => {
+                                AppGlobal.close-window()
+                            }
+                        }
+
+                        Text {
+                            color: rgb(79,79,79);
+                            text: "×";
+                            font-size: 24px;
+                        }
+                    }
+
+                    width: 30px;
+                }
+            }
+        }
+
+        Rectangle {
+            background: white;
+            width: 300px;
+            height: 400px;
+            x: 50px;
+            y: 50px;
 
             VerticalBox {
-                spacing: 10px;
+                spacing: 20px;
+                padding: 20px;
 
-                Text {
-                    text: "用户名";
-                    font-size: 14px;
-                    color: gray;
-                }
-
-                LineEdit {
-                    placeholder-text: "请输入用户名";
-                    text <=> root.username;
-                    padding: 8px;
-                }
-
-                Text {
-                    text: "密码";
-                    font-size: 14px;
-                    color: gray;
-                }
-
-                LineEdit {
-                    placeholder-text: "请输入密码";
-                    text <=> root.password;
-                    padding: 8px;
-                    input-type: InputType.password;
-                }
-            }
-
-            Rectangle {
-                background: #007bff;
-                TouchArea {
-                    clicked => { root.login(); }
-                }
                 Text {
                     text: "登录";
-                    color: white;
+                    font-size: 24px;
+                    horizontal-alignment: center;
+                    color: gray;
                 }
-                padding: 12px;
-            }
 
-            Text {
-                text: "还没有账号？注册";
-                font-size: 14px;
-                horizontal-alignment: center;
-                color: gray;
+                VerticalBox {
+                    spacing: 10px;
+
+                    Text {
+                        text: "用户名";
+                        font-size: 14px;
+                        color: gray;
+                    }
+
+                    LineEdit {
+                        placeholder-text: "请输入用户名";
+                        text <=> root.username;
+                        padding: 8px;
+                    }
+
+                    Text {
+                        text: "密码";
+                        font-size: 14px;
+                        color: gray;
+                    }
+
+                    LineEdit {
+                        placeholder-text: "请输入密码";
+                        text <=> root.password;
+                        padding: 8px;
+                        input-type: InputType.password;
+                    }
+                }
+
+                Rectangle {
+                    background: #007bff;
+                    TouchArea {
+                        clicked => { root.login(); }
+                    }
+                    Text {
+                        text: "登录";
+                        color: white;
+                    }
+                    padding: 12px;
+                }
+
+                Text {
+                    text: "还没有账号？注册";
+                    font-size: 14px;
+                    horizontal-alignment: center;
+                    color: gray;
+                }
             }
         }
     }

@@ -2,7 +2,7 @@ import { MessageItem } from "../store.slint";
 export component MessageInfo inherits Rectangle{
     in property <MessageItem> message-item;
     property<color> message-background : message-item.send-type=="send" ? rgb(149,236,105) : rgb(255,255,255);
-    // background: yellowgreen;
+    background: yellowgreen;
     Rectangle {
         width: 100%;
         min-height: 50px;
@@ -14,9 +14,9 @@ export component MessageInfo inherits Rectangle{
             //  spacing: 10px;
             // alignment: space-around;
             if message-item.text-type=="text":  HorizontalLayout {
-                if message-item.send-type=="receive":Rectangle {
-                    width: 20px;
-                }
+                // if message-item.send-type=="receive":Rectangle {
+                //     width: 20px;
+                // }
                 if message-item.send-type=="receive":Rectangle {
                     width: 50px;
                     height: 35px;
@@ -89,9 +89,9 @@ export component MessageInfo inherits Rectangle{
                         height: 35px;
                     }
                 }
-                if message-item.send-type=="send":Rectangle {
-                    width: 20px;
-                }
+                // if message-item.send-type=="send":Rectangle {
+                //     width: 20px;
+                // }
             }
             if message-item.text-type=="system":  HorizontalLayout {
                 Rectangle {
